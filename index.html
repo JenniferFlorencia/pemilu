@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Nanjing 2026</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <form action="">
+            <h1>Login</h1>
+
+            <div class="inputBox">
+                <input type="text" placeholder="Username" required>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"
+                    class="iconInLogIn">
+                    <!--Boxicons v3.0.8 https://boxicons.com | License  https://docs.boxicons.com/free-->
+                    <path
+                        d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5m0-8c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3M4 22h16c.55 0 1-.45 1-1v-1c0-3.86-3.14-7-7-7h-4c-3.86 0-7 3.14-7 7v1c0 .55.45 1 1 1m6-7h4c2.76 0 5 2.24 5 5H5c0-2.76 2.24-5 5-5">
+                    </path>
+                </svg>
+            </div>
+
+            <div class="inputBox">
+                <input type="password" placeholder="Password" required>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"
+                    class="iconInLogIn">
+                    <!--Boxicons v3.0.8 https://boxicons.com | License  https://docs.boxicons.com/free-->
+                    <path
+                        d="M6 22h12c1.1 0 2-.9 2-2v-9c0-1.1-.9-2-2-2h-1V7c0-2.76-2.24-5-5-5S7 4.24 7 7v2H6c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2M9 7c0-1.65 1.35-3 3-3s3 1.35 3 3v2H9zm-3 4h12v9H6z">
+                    </path>
+                </svg>
+            </div>
+
+            <div class="btnForgot">
+                <div class="item">
+                    <button type="submitBtn" class="button">
+                        Login
+                    </button>
+                </div>
+
+                <div class="item">
+                    <div class="forgot">
+                        <a href="mailto:alfathrafiuddin13@gmail.com?subject=Password Reset Request&body=Username:%20[masukkan%20username%20Anda]%0APlease%20help%20me%20reset%20my%20password">Forgot password?</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase_config.js';
+        
+        console.log("✅ Firebase berhasil diinisialisasi!");
+        console.log("Auth:", auth);
+        console.log("Firestore:", db);
+        
+        // Optional: Cek apakah user sedang login
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("User sedang login:", user.email);
+            } else {
+                console.log("Tidak ada user yang login");
+            }
+        });
+    </script>
+</body>
+
+</html>
