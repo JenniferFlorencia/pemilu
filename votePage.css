@@ -1,0 +1,109 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: clamp(14px, 1vw, 18px);
+    overflow: hidden;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(120deg, #0f0c29, #302b63);
+    color: white;
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(15px, 3vw, 30px);
+    position: relative;
+    z-index: 10;
+}
+
+.nav-left {
+    position: absolute;
+    left: 65px;
+}
+
+.nav-left a {
+    display: inline-block;
+    text-decoration: none;
+    color: white;
+    margin-right: 40px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-left a:hover {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.nav-right {
+    opacity: 0.7;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.nav-right:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.tag {
+    background: rgb(255, 255, 255, 0.9);
+    color: #111;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.candidate {
+    min-height: 100vh;
+    position: relative;
+}
+
+.white-space {
+    width: 60%;
+    min-height: 100vh;
+    background: #efefef;
+    clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%);
+}
+
+.candidate-text {
+    padding-left: clamp(20px, 5vw, 60px);
+    padding-top: clamp(20px, 4vw, 30px);
+}
+
+.main-title {
+    font-size: clamp(36px, 6vw, 80px);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: 1.2px;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0 0 10px 0;
+    background: linear-gradient(90deg, #2b2b4a, #9a97c9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.sub-title {
+    display: inline-block;
+    width: 100%;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 6px 16px;
+    margin-bottom: 30px;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(90deg, #242436, #9a97c9);
+    color: white;
+}

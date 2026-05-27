@@ -23,6 +23,7 @@ body{
     border-radius: 10px;
     padding: 30px 40px;
     backdrop-filter: blur(10px);
+    margin: 0 5%;
 }
 
 .wrapper h1{
@@ -62,22 +63,20 @@ body{
     transform: scale(1.02);
 }
 
-/* Perbaikan utama untuk align vertikal */
 .btnForgot {
     display: flex;
-    flex-direction: column;  /* Membuat layout vertikal */
-    justify-content: center; /* Perataan vertikal */
-    align-items: center;     /* Perataan horizontal */
-    gap: 15px;              /* Jarak antar item */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
     margin-top: 20px;
 }
 
 .item {
-    width: 100%;            /* Lebar penuh */
-    text-align: center;     /* Teks di tengah */
+    width: 100%;
+    text-align: center;
 }
 
-/* Untuk link forgot password */
 .wrapper .forgot {
     text-align: center;
 }

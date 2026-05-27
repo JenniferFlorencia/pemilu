@@ -54,11 +54,10 @@
     <script type="module">
         import { auth, db } from './firebase_config.js';
         
-        console.log("✅ Firebase berhasil diinisialisasi!");
+        console.log("Firebase berhasil diinisialisasi!");
         console.log("Auth:", auth);
         console.log("Firestore:", db);
         
-        // Optional: Cek apakah user sedang login
         auth.onAuthStateChanged((user) => {
             if (user) {
                 console.log("User sedang login:", user.email);
