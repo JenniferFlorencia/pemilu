@@ -11,7 +11,7 @@ html {
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(120deg, #533227, #5d3527);
+    background: linear-gradient(90deg, #6f4d46, #985842);
     color: white;
 }
 
@@ -57,8 +57,8 @@ body {
 }
 
 .tag {
-    background: rgb(255, 255, 255, 0.9);
-    color: #111;
+    background: rgba(217, 175, 150, 0.9);
+    color: #6f4d46;
     padding: 6px 18px;
     border-radius: 20px;
     font-size: 12px;
@@ -90,7 +90,7 @@ body {
     letter-spacing: 1.2px;
     font-family: 'Montserrat', sans-serif;
     margin: 0 0 10px 0;
-    background: linear-gradient(90deg, #2b2b4a, #9a97c9);
+    background: linear-gradient(90deg, #6f4d46, #b98977);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -104,7 +104,7 @@ body {
     padding: 6px 16px;
     margin-bottom: 30px;
     font-family: 'Orbitron', sans-serif;
-    background: linear-gradient(90deg, #242436, #9a97c9);
+    background: linear-gradient(90deg, #6f4d46, #c77e68);
     color: white;
 }
 
@@ -112,14 +112,14 @@ body {
     font-family: 'Orbitron', sans-serif;
     font-size: 14px;
     letter-spacing: 2px;
-    color: #2b2b4a;
+    color: #6f4d46;
     margin-bottom: 12px;
 }
 
 .about_text {
     font-family: 'Orbitron', sans-serif;
     font-size: clamp(12px, 1.2vw, 14px);
-    color: #6b6b7a;
+    color: #87655c;
     max-width: 380px;
 }
 
@@ -133,7 +133,7 @@ body {
 .circle_btn i {
     width: 50px;
     height: 50px;
-    background: #2b2b4a;
+    background: #6f4d46;
     color: white;
     display: flex;
     align-items: center;
@@ -149,9 +149,9 @@ body {
     font-size: 12px;
     letter-spacing: 1px;
     color: white;
-    background: linear-gradient(90deg, #2b2b4a, #443fa9);
+    background: linear-gradient(90deg, #6f4d46, #c77e68);
     border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(199, 126, 104, 0.4);
     cursor: pointer;
 }
 
@@ -188,9 +188,9 @@ body {
     position: absolute;
     top: -50px;
     right: 0;
-    width: clamp(300px, 50%, 1000px);
+    width: clamp(300px, 50%, 100%);
     height: 100vh;
-    background: linear-gradient(90deg, #bc9182, #8a695e);
+    background: linear-gradient(90deg, #d9af96, #a37668);
     clip-path: polygon(35% 0, 100% 0, 100% 100%, 0 100%);
 }
 
@@ -209,6 +209,7 @@ body {
     color: white;
     letter-spacing: 1px;
     font-family: 'Orbitron', sans-serif;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .image_card {
@@ -243,12 +244,12 @@ body {
     gap: clamp(10px, 2vw, 20px);
     padding: 30px clamp(15px, 5vw, 40px);
     background: #f5f2e7;
-    color: #302b63;
+    color: #6f4d46;
     margin: 30px 0 0 0;
 }
 
 .stats_content {
-    padding-left: 120px;
+    padding-left: 30%;
 }
 
 .stats_top {
@@ -265,7 +266,7 @@ body {
 .label {
     font-family: 'Orbitron', sans-serif;
     font-size: clamp(10px, 1vw, 12px);
-    color: #6b6b7a;
+    color: #906457;
     margin-bottom: 5px;
 }
 
@@ -273,4 +274,5 @@ body {
     font-family: 'Orbitron', sans-serif;
     font-size: clamp(12px, 1.3vw, 14px);
     margin-bottom: 15px;
+    color: #985842;
 }
