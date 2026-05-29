@@ -6,70 +6,236 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="votePage.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <title>Nanjing 2026</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Nanjing 2026 - Vote</title>
 </head>
 
 <body>
     <nav class="navbar">
-        <span class="tag">KANDIDAT 1</span>
+        <span class="tag" id="candidateTag">KANDIDAT 1</span>
     </nav>
 
     <section class="candidate">
         <div class="white-space">
             <div class="candidate-text">
-                <h1 class="main-title"> Vincentius<br> Alvin Rumantir</h1>
-                <div class="sub-title">
-                    Lorem ipsum dolor sit amet
+                <h1 class="main-title" id="candidateName">Loading...</h1>
+                <div class="sub-title" id="candidateSubtitle">
+                    Pemilu PPIT Nanjing 2026
                 </div>
 
                 <div class="about_section">
                     <h3 class="about_title">ABOUT PROFILE</h3>
-                    <p class="about_text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus ipsa culpa sequi voluptas placeat quibusdam autem dolore, iure, quisquam vel provident aspernatur assumenda quidem voluptatem aperiam deleniti molestias blanditiis beatae.
+                    <p class="about_text" id="candidateBio">
+                        Loading candidate information...
                     </p>
                 </div>
 
                 <div class="bottom_actions">
-                    <div class="circle_btn">
-                        <i class="fa-solid fa-arrow-up"></i>
+                    <div class="pill_btn_agree" id="archiveBtn">
+                        Setuju
                     </div>
-                    <div class="pill_btn">
-                        Vincentius Archived
+                    <div class="pill_btn_notagree" id="archiveBtn">
+                        Tidak Setuju
                     </div>
                 </div>
-
             </div>
         </div>
 
-        <img src="assets/edited_anko_front_view.png" alt="candidate photo" class="candidate_img">
+        <img src="assets/edited_anko_front_view.png" alt="candidate photo" class="candidate_img" id="candidatePhoto">
 
         <div class="right_panel">
             <div class="top_panel">
-                <div class="tag_panel">我喜欢月亮，月亮不知道</div>
+                <div class="tag_panel">PPIT PEMILU 2026</div>
             </div>
 
             <div class="image_card">
                 <img src="assets/anko_sideview.png" alt="candidate eyes">
-                <div class="image_overlay_text">PPIT PEMILU 2026</div>
+                <div class="image_overlay_text">YOUR VOTE MATTERS</div>
             </div>
 
             <div class="stats_card">
                 <div class="stats_content">
                     <div class="stats_top">
                         <div>
-                            <p class="label">Anko Uguisu <br></p>
-                            <p class="voice">You are... alive?</p>
+                            <p class="label" id="voterName">Welcome, <br></p>
+                            <p class="voice" id="voterStatus">Ready to vote?</p>
                         </div>
-
-
                     </div>
                     <div class="dots">...</div>
                 </div>
             </div>
         </div>
-
-
     </section>
+
+    <div id="notification"
+        style="position: fixed; top: 20px; right: 20px; background: #4caf50; color: white; padding: 15px; border-radius: 5px; display: none; z-index: 1000;">
+    </div>
+
+    <script type="module">
+        import { db } from './firebase_config.js';
+        import { collection, getDocs, addDoc, updateDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+        // Cek apakah voter sudah login
+        const currentVoter = JSON.parse(localStorage.getItem('currentVoter'));
+
+        if (!currentVoter) {
+            alert('Silakan login terlebih dahulu!');
+            window.location.href = 'index.html';
+        }
+
+        // Tampilkan nama voter
+        document.getElementById('voterName').innerHTML = `Welcome, ${currentVoter.name}<br>`;
+
+        if (currentVoter.hasVoted) {
+            document.getElementById('voterStatus').textContent = 'You have already voted!';
+            document.getElementById('voteBtn').style.opacity = '0.5';
+            document.getElementById('archiveBtn').style.opacity = '0.5';
+            document.getElementById('voteBtn').style.pointerEvents = 'none';
+            document.getElementById('archiveBtn').style.pointerEvents = 'none';
+            showNotification('You have already voted! Thank you for participating.', 'warning');
+        } else {
+            document.getElementById('voterStatus').textContent = 'Ready to vote?';
+        }
+
+        // Load candidates dari Firestore
+        let currentCandidate = null;
+        let candidatesList = [];
+        let currentIndex = 0;
+
+        async function loadCandidates() {
+            try {
+                const candidatesRef = collection(db, 'candidates');
+                const querySnapshot = await getDocs(candidatesRef);
+
+                candidatesList = [];
+                querySnapshot.forEach((doc) => {
+                    candidatesList.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                // Urutkan berdasarkan candidateNumber
+                candidatesList.sort((a, b) => a.candidateNumber - b.candidateNumber);
+
+                if (candidatesList.length > 0) {
+                    displayCandidate(currentIndex);
+                } else {
+                    document.getElementById('candidateName').textContent = 'No Candidates';
+                    document.getElementById('candidateBio').textContent = 'No candidate data available.';
+                }
+            } catch (error) {
+                console.error("Error loading candidates:", error);
+                document.getElementById('candidateName').textContent = 'Error Loading Data';
+                document.getElementById('candidateBio').textContent = 'Failed to load candidate information. Please refresh the page.';
+            }
+        }
+
+        function displayCandidate(index) {
+            if (candidatesList.length === 0) return;
+
+            currentCandidate = candidatesList[index];
+            document.getElementById('candidateName').innerHTML = currentCandidate.name.replace(' ', '<br>');
+            document.getElementById('candidateSubtitle').textContent = `Candidate ${currentCandidate.candidateNumber}`;
+            document.getElementById('candidateBio').textContent = currentCandidate.bio || 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus ipsa culpa sequi voluptas placeat quibusdam autem dolore, iure, quisquam vel provident aspernatur assumenda quidem voluptatem aperiam deleniti molestias blanditiis beatae.';
+            document.getElementById('candidateTag').textContent = `KANDIDAT ${currentCandidate.candidateNumber}`;
+
+            // Update photo jika ada
+            if (currentCandidate.photoURL) {
+                document.getElementById('candidatePhoto').src = currentCandidate.photoURL;
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = type === 'success' ? '#4caf50' : '#ff9800';
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        async function submitVote() {
+            if (!currentCandidate) {
+                showNotification('No candidate selected!', 'warning');
+                return;
+            }
+
+            if (currentVoter.hasVoted) {
+                showNotification('You have already voted!', 'warning');
+                return;
+            }
+
+            try {
+                // Simpan vote ke collection 'votes'
+                const voteData = {
+                    userName: currentVoter.name,
+                    candidateId: currentCandidate.id,
+                    candidateNumber: currentCandidate.candidateNumber,
+                    candidateName: currentCandidate.name,
+                    votedAt: new Date().toISOString(),
+                    voterEmail: currentVoter.email
+                };
+
+                await addDoc(collection(db, 'votes'), voteData);
+
+                // Update status hasVoted di collection 'voters'
+                const votersRef = collection(db, 'voters');
+                const q = query(votersRef, where('email', '==', currentVoter.email));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    const voterDoc = querySnapshot.docs[0];
+                    await updateDoc(doc(db, 'voters', voterDoc.id), {
+                        hasVoted: true,
+                        votedAt: new Date().toISOString(),
+                        votedFor: currentCandidate.name
+                    });
+
+                    // Update localStorage
+                    currentVoter.hasVoted = true;
+                    localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
+                }
+
+                showNotification(`Thank you for voting for ${currentCandidate.name}!`, 'success');
+
+                // Disable vote buttons
+                document.getElementById('voteBtn').style.opacity = '0.5';
+                document.getElementById('archiveBtn').style.opacity = '0.5';
+                document.getElementById('voteBtn').style.pointerEvents = 'none';
+                document.getElementById('archiveBtn').style.pointerEvents = 'none';
+                document.getElementById('voterStatus').textContent = 'You have already voted!';
+
+                // Optional: Redirect after 2 seconds
+                setTimeout(() => {
+                    // window.location.href = 'results.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error("Error submitting vote:", error);
+                showNotification('Failed to submit vote: ' + error.message, 'warning');
+            }
+        }
+
+        // Event listeners untuk navigasi kandidat (optional - untuk multiple candidates)
+        // Anda bisa menambahkan tombol next/previous jika ada multiple candidates
+
+        // Load candidates saat halaman dimuat
+        loadCandidates();
+
+        // Setup vote button
+        document.getElementById('voteBtn').addEventListener('click', submitVote);
+        document.getElementById('archiveBtn').addEventListener('click', submitVote);
+
+        // Logout functionality (optional)
+        window.addEventListener('beforeunload', () => {
+            // Clear localStorage jika diperlukan
+            // localStorage.removeItem('currentVoter');
+        });
+        
+    </script>
 </body>
 
 </html>
