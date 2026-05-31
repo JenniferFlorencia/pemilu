@@ -1,0 +1,27 @@
+{
+  "name": "pemilu-ppit-2026",
+  "version": "1.0.0",
+  "description": "Aplikasi Pemilu PPIT Nanjing 2026",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "firebase serve",
+    "deploy": "firebase deploy",
+    "import-users": "node src/scripts/import-users.js",
+    "backup": "node src/scripts/backup.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  },
+  "keywords": [
+    "pemilu",
+    "ppit",
+    "nanjing",
+    "voting"
+  ],
+  "author": "PPIT Nanjing 2026",
+  "license": "ISC"
+}

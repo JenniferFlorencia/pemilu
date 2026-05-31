@@ -1,4 +1,81 @@
-.vscode/
-.DS_Store
-*.log
+# Sudah ada di list Anda
 node_modules/
+.env
+.env.local
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.firebase/
+*.log
+*.backup.json
+backups/
+serviceAccountKey.json
+
+# Tambahan yang disarankan:
+**/node_modules/
+
+# Firebase cache & config local
+.firebase/hosting.*.cache
+firebase-debug.log
+.firebaserc 
+
+# File hasil build (jika ada)
+dist/
+build/
+*.bundle.js
+*.bundle.css
+
+# File sementara backup (lihat folder backup_old_files)
+backup_old_files/
+
+# Credentials dan keys (sudah ada serviceAccountKey.json, tapi tambahkan pattern)
+*.pem
+*.key
+*.p12
+*.json.enc
+*serviceAccount*.json
+*credentials*.json
+
+# OS generated files
+*.swp
+*.swo
+*~
+.DS_Store?.?
+ehthumbs.db
+Icon?
+
+# Logs dan temporary files
+logs/
+*.pid
+*.seed
+*.pid.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (sudah ada tapi tambahkan variasi)
+.env.*.local
+.env.production.local
+.env.development.local
+
+# IDE lainnya (selain vscode & idea)
+*.sublime-*
+.project
+.classpath
+.settings/
+
+# Coverage directory (dari test)
+coverage/
+.nyc_output/
+
+# Package manager locks (opsional, tergantung tim)
+# package-lock.json  # banyak tim tetap commit ini
+# yarn.lock
+
+# File sementara dari backup.js
+*.backup.json
+*.backup.js
+
+# Firebase Storage rules backup (tambahan)
+storage.rules.backup*
