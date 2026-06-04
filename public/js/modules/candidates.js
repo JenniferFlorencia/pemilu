@@ -1,4 +1,5 @@
-import { db } from '../config/firebase.js';
+// /public/js/modules/candidates.js
+import { db } from '/js/config/firebase.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 export async function loadCandidates() {
@@ -12,8 +13,7 @@ export async function loadCandidates() {
             candidatesList.push({ 
                 id: doc.id, 
                 ...data,
-                // Pastikan candidateNumber ada
-                candidateNumber: data.candidateNumber || parseInt(doc.id) || 0
+                candidateNumber: data.candidateNumber || parseInt(doc.id) || 0,
             });
         });
         
@@ -56,5 +56,25 @@ export function displayCandidate(candidate, index, total) {
     
     if (photoElement && candidate.photoURL) {
         photoElement.src = candidate.photoURL;
+    }
+    
+    // Tampilkan VISI - DIPERBAIKI dengan menambahkan class
+    const visionContainer = document.getElementById('candidateVision');
+    if (visionContainer) {
+        if (candidate.vision && candidate.vision.length > 0) {
+            visionContainer.innerHTML = candidate.vision.map(v => `<li class="mission_container">${v}</li>`).join('');
+        } else {
+            visionContainer.innerHTML = '<li class="mission_container">Visi belum tersedia</li>';
+        }
+    }
+    
+    // Tampilkan MISI
+    const missionContainer = document.getElementById('candidateMission');
+    if (missionContainer) {
+        if (candidate.mission && candidate.mission.length > 0) {
+            missionContainer.innerHTML = candidate.mission.map(m => `<li class="mission_container">${m}</li>`).join('');
+        } else {
+            missionContainer.innerHTML = '<li class="mission_container">Misi belum tersedia</li>';
+        }
     }
 }

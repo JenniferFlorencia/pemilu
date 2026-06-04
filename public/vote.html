@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/vote.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/vote.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
     <title>Nanjing 2026 - Vote</title>
 </head>
+
 <body>
     <nav class="navbar">
-        <span class="tag" id="candidateTag">KANDIDAT 1</span>
+        <span class="tag" id="candidateTag">Loading...</span>
     </nav>
     <section class="candidate">
         <div class="white-space">
@@ -21,13 +23,10 @@
                     <h3 class="about_title">ABOUT PROFILE</h3>
                     <p class="about_text" id="candidateBio">Loading candidate information...</p>
                 </div>
-                <div class="bottom_actions">
-                    <div class="pill_btn_agree pill_btn" id="agreeBtn">Setuju</div>
-                    <div class="pill_btn_notagree pill_btn" id="disagreeBtn">Tidak Setuju</div>
-                </div>
+
             </div>
         </div>
-        <img src="/assets/images/edited_anko_front_view.png" alt="candidate photo" class="candidate_img" id="candidatePhoto">
+        <img src="#" alt="candidate photo" class="candidate_img" id="candidatePhoto">
         <div class="right_panel">
             <div class="top_panel">
                 <div class="tag_panel">PPIT PEMILU 2026</div>
@@ -44,7 +43,26 @@
                             <p class="voice" id="voterStatus">Ready to vote?</p>
                         </div>
                     </div>
+
                     <div class="dots">...</div>
+
+                    <!-- VISI -->
+                    <h4 class="about_title">Visi:</h4>
+                    <ol class="mission_grid" id="candidateVision">
+                        <li class="mission_container">Loading vision...</li>
+                    </ol>
+                    <!-- MISI -->
+                    <h4 class="about_title">Misi:</h4>
+                    <ul class="mission_grid" id="candidateMission">
+                        <li class="mission_container">Loading mission...</li>
+                    </ul>
+
+                </div>
+            </div>
+            <div class="button_card">
+                <div class="bottom_actions">
+                    <div class="pill_btn_agree pill_btn" id="agreeBtn">Setuju</div>
+                    <div class="pill_btn_notagree pill_btn" id="disagreeBtn">Tidak Setuju</div>
                 </div>
             </div>
         </div>
@@ -54,4 +72,5 @@
 
     <script type="module" src="/js/vote.js"></script>
 </body>
+
 </html>

@@ -1,6 +1,7 @@
-import { db } from '../config/firebase.js';
+// /public/js/modules/voteHandler.js
+import { db } from '/js/config/firebase.js';
 import { doc, collection, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-import { showNotification, showLoading } from './utils.js';
+import { showNotification, showLoading } from '/js/modules/utils.js';
 
 export async function submitVote(candidate, voterData, onSuccess) {
     console.log('Candidate:', candidate);
@@ -48,7 +49,6 @@ export async function submitVote(candidate, voterData, onSuccess) {
         // 2. Update status voter
         const voterId = voterData.voterId || voterData.username;
         const voterRef = doc(db, 'voters', voterId);
-        console.log('Voter ref path:', voterRef.path);
         
         await updateDoc(voterRef, { 
             hasVoted: true, 
@@ -65,7 +65,6 @@ export async function submitVote(candidate, voterData, onSuccess) {
         
     } catch (error) {
         console.error("Error submitting vote:", error);
-        console.error("Error details:", error.message, error.stack);
         showNotification('Gagal menyimpan vote: ' + error.message, 'error');
         return false;
         

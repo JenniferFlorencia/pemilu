@@ -1,8 +1,9 @@
-import { db, auth } from './config/firebase.js';
+// /public/js/vote.js
+import { db, auth } from '/js/config/firebase.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-import { loadCandidates, displayCandidate } from './modules/candidates.js';
-import { submitVote } from './modules/vote.js';
-import { showNotification } from './modules/utils.js';
+import { loadCandidates, displayCandidate } from '/js/modules/candidates.js';
+import { submitVote } from '/js/modules/voteHandler.js';
+import { showNotification } from '/js/modules/utils.js';
 
 let currentCandidate = null;
 let candidatesList = [];
@@ -19,6 +20,11 @@ async function init() {
     
     candidatesList = await loadCandidates();
     console.log('Candidates loaded:', candidatesList);
+    
+    if (candidatesList.length > 0) {
+        console.log('First candidate vision:', candidatesList[0].vision);
+        console.log('First candidate mission:', candidatesList[0].mission);
+    }
     
     if (candidatesList.length > 0) {
         currentCandidate = candidatesList[0];
@@ -64,7 +70,6 @@ async function handleVote() {
     });
 }
 
-// Tunggu DOM siap
 document.addEventListener('DOMContentLoaded', () => {
     init();
     
