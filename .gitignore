@@ -79,3 +79,38 @@ coverage/
 
 # Firebase Storage rules backup (tambahan)
 storage.rules.backup*
+src/scripts/import-users.cjs
+create-auth-users.js
+src/scripts/test-*.cjs
+src/scripts/*-auth.js
+
+# Admin & server scripts (DO NOT COMMIT)
+create-auth-users.js
+src/scripts/*.cjs
+src/scripts/*.js
+!src/scripts/*.template.js
+src/scripts/backup.js
+src/scripts/generate-hashes.js
+
+# Test files with hardcoded credentials
+tests/load-test.js
+tests/auth.test.js
+
+# =============== ADMIN & SERVER SCRIPTS =============== #
+# Jangan commit script yang mengandung credentials
+create-auth-users.js
+src/scripts/*.cjs
+src/scripts/*.js
+!src/scripts/*.template.cjs
+!src/scripts/*.template.js
+src/scripts/backup.js
+src/scripts/generate-hashes.js
+
+# Test files with hardcoded data
+tests/load-test.js
+tests/auth.test.js
+
+# Temporary user data
+.user-passwords.json
+user-passwords.txt
+imported-users.log
