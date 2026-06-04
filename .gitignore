@@ -1,116 +1,109 @@
-# Sudah ada di list Anda
+# ============================================
+# DEPENDENCIES & BUILD
+# ============================================
 node_modules/
-.env
-.env.local
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-.firebase/
-*.log
-*.backup.json
-backups/
-serviceAccountKey.json
-
-# Tambahan yang disarankan:
 **/node_modules/
-
-# Firebase cache & config local
-.firebase/hosting.*.cache
-firebase-debug.log
-.firebaserc 
-
-# File hasil build (jika ada)
 dist/
 build/
 *.bundle.js
 *.bundle.css
 
-# File sementara backup (lihat folder backup_old_files)
-backup_old_files/
+# ============================================
+# ENVIRONMENT & CONFIGURATION FILES
+# ============================================
+.env
+.env.local
+.env.*.local
+.env.production.local
+.env.development.local
+.firebaserc
+.firebase/
+firebase-debug.log
+.firebase/hosting.*.cache
 
-# Credentials dan keys (sudah ada serviceAccountKey.json, tapi tambahkan pattern)
+# ============================================
+# CREDENTIALS & KEYS (RAHASIA!)
+# ============================================
+serviceAccountKey.json
+*serviceAccount*.json
+*credentials*.json
 *.pem
 *.key
 *.p12
 *.json.enc
-*serviceAccount*.json
-*credentials*.json
 
-# OS generated files
-*.swp
-*.swo
-*~
-.DS_Store?.?
-ehthumbs.db
-Icon?
+# ============================================
+# BACKUP FILES & FOLDERS
+# ============================================
+backup_old_files/
+backups/
+*.backup.json
+*.backup.js
+storage.rules.backup*
 
-# Logs dan temporary files
-logs/
+# ============================================
+# ADMIN & SERVER SCRIPTS (HANYA DI LOCAL)
+# ============================================
+# Admin scripts di root
+create-auth-users.js
+
+# All server scripts di src/scripts/
+src/scripts/*.cjs
+src/scripts/*.js
+src/scripts/*.template.*
+!src/scripts/*.template.cjs
+!src/scripts/*.template.js
+
+# ============================================
+# TEST FILES
+# ============================================
+tests/
+coverage/
+.nyc_output/
+*.test.js
+*.test.cjs
+load-test.js
+auth.test.js
+
+# ============================================
+# TEMPORARY USER DATA
+# ============================================
+.user-passwords.json
+user-passwords.txt
+imported-users.log
 *.pid
 *.seed
 *.pid.lock
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment files (sudah ada tapi tambahkan variasi)
-.env.*.local
-.env.production.local
-.env.development.local
+# ============================================
+# OS GENERATED FILES
+# ============================================
+.DS_Store
+.DS_Store?.?
+Thumbs.db
+ehthumbs.db
+Icon?
+*.swp
+*.swo
+*~
 
-# IDE lainnya (selain vscode & idea)
+# ============================================
+# IDE & EDITOR FILES
+# ============================================
+.vscode/
+.idea/
 *.sublime-*
 .project
 .classpath
 .settings/
 
-# Coverage directory (dari test)
-coverage/
-.nyc_output/
-
-# Package manager locks (opsional, tergantung tim)
-# package-lock.json  # banyak tim tetap commit ini
+# ============================================
+# PACKAGE MANAGER LOCKS (Optional - uncomment if needed)
+# ============================================
+# package-lock.json
 # yarn.lock
-
-# File sementara dari backup.js
-*.backup.json
-*.backup.js
-
-# Firebase Storage rules backup (tambahan)
-storage.rules.backup*
-src/scripts/import-users.cjs
-create-auth-users.js
-src/scripts/test-*.cjs
-src/scripts/*-auth.js
-
-# Admin & server scripts (DO NOT COMMIT)
-create-auth-users.js
-src/scripts/*.cjs
-src/scripts/*.js
-!src/scripts/*.template.js
-src/scripts/backup.js
-src/scripts/generate-hashes.js
-
-# Test files with hardcoded credentials
-tests/load-test.js
-tests/auth.test.js
-
-# =============== ADMIN & SERVER SCRIPTS =============== #
-# Jangan commit script yang mengandung credentials
-create-auth-users.js
-src/scripts/*.cjs
-src/scripts/*.js
-!src/scripts/*.template.cjs
-!src/scripts/*.template.js
-src/scripts/backup.js
-src/scripts/generate-hashes.js
-
-# Test files with hardcoded data
-tests/load-test.js
-tests/auth.test.js
-
-# Temporary user data
-.user-passwords.json
-user-passwords.txt
-imported-users.log
