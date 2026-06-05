@@ -19,5 +19,17 @@ loginForm.addEventListener('submit', async (e) => {
         return;
     }
     
-    await loginUser(username, password);
+    const success = await loginUser(username, password);
+    
+    // Jika login berhasil, mulai preload vote assets
+    if (success) {
+        try {
+            // Dynamic import preload module
+            const { preloadVoteAssets, preloadCandidateData } = await import('./preload.js');
+            preloadVoteAssets();
+            preloadCandidateData(); // Optional: preload data kandidat
+        } catch (err) {
+            console.warn('Preload module not available:', err);
+        }
+    }
 });

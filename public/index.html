@@ -51,7 +51,17 @@
 
     <script src="./js/config/env.js"></script>
     <script type="module" src="./js/login.js"></script>
-    <script type="module" src="/js/login.js"></script>
+    
+    <!-- Preload script untuk vote assets -->
+    <script type="module">
+        import { preloadVoteAssets } from './js/preload.js';
+        
+        // Jalankan preloading saat halaman index dimuat
+        preloadVoteAssets();
+        
+        // Optional: Expose ke window untuk debugging
+        window.preloadVoteAssets = preloadVoteAssets;
+    </script>
 </body>
 
 </html>

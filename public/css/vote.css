@@ -4,7 +4,8 @@
     box-sizing: border-box;
 }
 
-@keyframes slideInNavbar {
+/* ANIMASI UNTUK DESKTOP */
+@keyframes slideInFromLeft {
     0% {
         transform: translateX(-100%);
         opacity: 0;
@@ -25,107 +26,59 @@
     }
 }
 
-/* Update style navbar yang sudah ada */
-.navbar {
-    width: 60%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: clamp(15px, 3vw, 30px);
-    opacity: 0.7;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    cursor: pointer;
-    /* Tambahkan animasi */
-    animation: slideInNavbar 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes slideInFromLeftSmooth {
-    0% {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    100% {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-.white-space {
-    animation: slideInFromLeftSmooth 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-}
-
-.right_panel {
-    animation: slideInFromRightSmooth 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-}
-
-@keyframes slideInFromRightSmooth {
+@keyframes slideInFromRight {
     0% {
         transform: translateX(100%);
         opacity: 0;
     }
+    70% {
+        transform: translateX(-5%);
+        opacity: 1;
+    }
+    85% {
+        transform: translateX(2%);
+    }
+    95% {
+        transform: translateX(-1%);
+    }
     100% {
         transform: translateX(0);
         opacity: 1;
     }
 }
 
-
-/* Responsive: Sesuaikan animasi untuk mobile */
-@media screen and (max-width: 768px) {
-    .candidate_img {
-        animation: slideInFromBottomMobile 0.7s cubic-bezier(0.34, 1.2, 0.64, 1) forwards, floatScale 4s ease-in-out infinite 0.7s;
+@keyframes slideInFromBottom {
+    0% {
+        transform: translateX(-50%) translateY(100px);
         opacity: 0;
     }
-    
-    @keyframes slideInFromBottomMobile {
-        0% {
-            transform: translateX(-50%) translateY(80px);
-            opacity: 0;
-        }
-        60% {
-            transform: translateX(-50%) translateY(-10px);
-            opacity: 1;
-        }
-        80% {
-            transform: translateX(-50%) translateY(4px);
-        }
-        100% {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+    60% {
+        transform: translateX(-50%) translateY(-15px);
+        opacity: 1;
     }
-    
-    .white-space {
-        animation: slideInFromLeftMobile 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    80% {
+        transform: translateX(-50%) translateY(5px);
     }
-    
-    @keyframes slideInFromLeftMobile {
-        0% {
-            transform: translateX(-100%);
-            opacity: 0;
-        }
-        100% {
-            transform: translateX(0);
-            opacity: 1;
-        }
+    95% {
+        transform: translateX(-50%) translateY(-3px);
     }
-    
-    .right_panel {
-        animation: slideInFromRightMobile 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-    }
-    
-    @keyframes slideInFromRightMobile {
-        0% {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        100% {
-            transform: translateX(0);
-            opacity: 1;
-        }
+    100% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
     }
 }
 
+@keyframes floatScale {
+    0% {
+        transform: translateX(-50%) scale(1) translateY(0);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.05) translateY(-10px);
+    }
+    100% {
+        transform: translateX(-50%) scale(1) translateY(0);
+    }
+}
 
 html {
     font-size: clamp(14px, 1vw, 18px);
@@ -136,7 +89,6 @@ body {
     display: block;
     background: linear-gradient(90deg, #6f4d46, #985842);
 }
-
 
 /*===================
 NAVBAR SECTION
@@ -150,6 +102,7 @@ NAVBAR SECTION
     opacity: 0.7;
     transition: transform 0.3s ease, opacity 0.3s ease;
     cursor: pointer;
+    animation: slideInFromLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .navbar:hover {
@@ -184,6 +137,7 @@ MAIN SECTION (PANEL KIRI)
     min-height: 100vh;
     background: #f5f2e7;
     clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%);
+    animation: slideInFromLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .candidate-text {
@@ -199,10 +153,8 @@ MAIN SECTION (PANEL KIRI)
     font-family: 'Montserrat', sans-serif;
     margin: 0 0 10px 0;
     background: linear-gradient(90deg, #6f4d46, #b98977);
-
     background-clip: text;
     -webkit-background-clip: text;
-
     -webkit-text-fill-color: transparent;
 }
 
@@ -228,7 +180,6 @@ MAIN SECTION (PANEL KIRI)
 }
 
 .about_text {
-    background: purple;
     font-family: 'Orbitron', sans-serif;
     font-size: clamp(20px, 1.2vw, 14px);
     color: #87655c;
@@ -244,23 +195,10 @@ MAIN SECTION (FOTO UTAMA)
     bottom: 0px;
     left: 46%;
     width: clamp(200px, 50vw, 600px);
-    animation: floatScale 4s ease-in-out infinite;
+    animation: slideInFromBottom 0.9s cubic-bezier(0.34, 1.2, 0.64, 1) forwards, floatScale 4s ease-in-out infinite 0.9s;
     z-index: 12;
     pointer-events: none;
-}
-
-@keyframes floatScale {
-    0% {
-        transform: translateX(-50%) scale(1) translateY(0);
-    }
-
-    50% {
-        transform: translateX(-50%) scale(1.05) translateY(-10px);
-    }
-
-    100% {
-        transform: translateX(-50%) scale(1) translateY(0);
-    }
+    opacity: 0;
 }
 
 /*========================
@@ -275,6 +213,7 @@ MAIN SECTION (PANEL KANAN)
     height: 105vh;
     background: linear-gradient(90deg, #d9af96, #a37668);
     clip-path: polygon(35% 0, 100% 0, 100% 100%, 0 100%);
+    animation: slideInFromRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .top_panel {
@@ -453,16 +392,12 @@ MAIN SECTION (TOMBOL CTA)
     box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
 }
 
-
-/*BATAS AKHIR*/
-
-/* Tambahkan di akhir file votePage.css */
+/* NOTIFICATION */
 @keyframes slideIn {
     from {
         transform: translateX(100%);
         opacity: 0;
     }
-
     to {
         transform: translateX(0);
         opacity: 1;
@@ -492,25 +427,60 @@ MAIN SECTION (TOMBOL CTA)
         flex-direction: column;
     }
 
+    /* PERBAIKAN: Gambar kandidat di mobile */
     .candidate_img {
         order: 1;
-        z-index: 1;
-        position: relative;
-        left: 50%;
-        transform: translateX(-50%);
+        position: relative !important;
+        left: 40%;
+        transform: translateX(-50%) !important;
         width: 80%;
         max-width: 350px;
-        margin-top: 20px;
-        margin-bottom: -10px;
+        margin: 20px auto 0 auto !important;
+        display: block !important;
+        z-index: 10 !important;
+        opacity: 1 !important;
+        animation: slideInFromBottomMobile 0.7s cubic-bezier(0.34, 1.2, 0.64, 1) forwards, floatScaleMobile 4s ease-in-out infinite 0.7s;
+    }
+
+    @keyframes slideInFromBottomMobile {
+        0% {
+            transform: translateX(-50%) translateY(80px);
+            opacity: 0;
+        }
+        60% {
+            transform: translateX(-50%) translateY(-10px);
+            opacity: 1;
+        }
+        80% {
+            transform: translateX(-50%) translateY(4px);
+        }
+        100% {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes floatScaleMobile {
+        0% {
+            transform: translateX(-50%) scale(1) translateY(0);
+        }
+        50% {
+            transform: translateX(-50%) scale(1.03) translateY(-6px);
+        }
+        100% {
+            transform: translateX(-50%) scale(1) translateY(0);
+        }
     }
 
     .white-space {
         order: 2;
-        z-index: 2;
         width: 100%;
         min-height: auto;
         clip-path: none;
         padding-bottom: 30px;
+        position: relative;
+        z-index: 20;
+        margin-top: -20px;
     }
 
     .right_panel {
@@ -521,6 +491,8 @@ MAIN SECTION (TOMBOL CTA)
         height: auto;
         clip-path: none;
         padding-bottom: 30px;
+        z-index: 1;
+        margin-top: -10px;
     }
 
     .candidate-text {
@@ -542,7 +514,7 @@ MAIN SECTION (TOMBOL CTA)
         font-size: 11px;
     }
 
-    .about_title{
+    .about_title {
         text-align: center;
     }
     
@@ -560,7 +532,6 @@ MAIN SECTION (TOMBOL CTA)
         font-size: clamp(16px, 1.3vw, 14px);
     }
 
-
     .bottom_actions {
         margin-left: 0%;
         display: flex;
@@ -575,24 +546,10 @@ MAIN SECTION (TOMBOL CTA)
         justify-content: space-between;
     }
 
-
-    @keyframes floatScale {
-        0% {
-            transform: translateX(-50%) scale(1) translateY(0);
-        }
-
-        50% {
-            transform: translateX(-50%) scale(1.03) translateY(-6px);
-        }
-
-        100% {
-            transform: translateX(-50%) scale(1) translateY(0);
-        }
-    }
-
     .navbar {
         width: 100%;
         padding: 20px;
+        animation: slideInFromLeftMobile 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
 
     .tag {
@@ -624,9 +581,42 @@ MAIN SECTION (TOMBOL CTA)
         top: 15px;
         font-size: 11px;
     }
+
+    /* Animasi mobile untuk navbar, white-space, right_panel */
+    @keyframes slideInFromLeftMobile {
+        0% {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideInFromRightMobile {
+        0% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .white-space {
+        animation: slideInFromLeftMobile 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    .right_panel {
+        animation: slideInFromRightMobile 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
 }
 
-/* Jika ingin lebih spesifik berdasarkan lebar layar */
+/* =========================
+   DESKTOP LARGE
+========================= */
 @media screen and (min-width: 1200px) {
     .bottom_actions {
         width: 55% !important;
