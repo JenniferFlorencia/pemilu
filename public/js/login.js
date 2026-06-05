@@ -1,5 +1,5 @@
-import { loginUser } from '../js/modules/auth.js';
-import { validateInput } from '../js/modules/utils.js';
+import { loginUser } from './modules/auth.js';
+import { validateInput, showNotification } from './modules/utils.js';
 
 const loginForm = document.getElementById('loginForm');
 

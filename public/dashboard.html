@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pemilu - Live Results</title>
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+    <div class="spinner"></div>
+    <p>Memeriksa autentikasi...</p>
+</div>
+
+<!-- DASHBOARD CONTENT (awalnya hidden) -->
+<div id="dashboardContent" style="display: none;">
+    <div class="container">
+        <header class="dashboard-header">
+            <div>
+                <h1>DASHBOARD PEMILU - <span>HASIL SEMENTARA</span></h1>
+                <p><span class="live-indicator"></span> Data diperbarui: <span id="lastUpdate">-</span> WIB</p>
+            </div>
+            <div class="header-cards">
+                <div class="info-card">
+                    <div class="icon blue">👥</div>
+                    <div>
+                        <small>Total Pemilih Terdaftar</small>
+                        <h3 id="totalVoters">-</h3>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="icon green">🗳️</div>
+                    <div>
+                        <small>Total Suara Masuk</small>
+                        <h3 id="totalVotesCast">- <span id="votePercent">(0%)</span></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="button-group">
+                <button id="refreshBtn" class="btn btn-primary">🔄 Refresh</button>
+                <button id="logoutBtn" class="btn btn-danger">🚪 Logout</button>
+            </div>
+        </header>
+
+        <section class="chart-section">
+            <div class="chart-box">
+                <canvas id="voteChart"></canvas>
+            </div>
+            <div class="summary-box">
+                <h2>RINGKASAN HASIL SUARA</h2>
+                <p>Persentase perolehan suara berdasarkan data yang telah masuk</p>
+                <div id="summaryItems">
+                    <p style="text-align: center; color: #999;">Memuat data...</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="result-section" id="resultSection">
+            <p style="text-align: center; color: #999;">Memuat data kandidat...</p>
+        </section>
+
+        <div class="info-footer">
+            <div id="infoFooter">Memuat data...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Load environment variables first -->
+<script src="./js/config/env.js"></script>
+
+<!-- Main dashboard script -->
+<script type="module">
+    import { auth } from './js/config/firebase.js';
+    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    
+    // Elemen DOM
+    const loadingScreen = document.getElementById('loadingScreen');
+    const dashboardContent = document.getElementById('dashboardContent');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    
+    // Fungsi logout
+    async function handleLogout() {
+        try {
+            await signOut(auth);
+            localStorage.removeItem('currentVoter');
+            window.location.href = '/index.html';
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    }
+    
+    // Fungsi refresh
+    async function handleRefresh() {
+        if (refreshBtn) {
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '🔄 Memuat...';
+        }
+        
+        try {
+            const { loadDashboard } = await import('./js/dashboard-main.js');
+            await loadDashboard();
+        } catch (error) {
+            console.error('Refresh error:', error);
+            const infoFooter = document.getElementById('infoFooter');
+            if (infoFooter) {
+                infoFooter.innerHTML = '❌ Gagal memuat ulang data. Silakan refresh halaman.';
+            }
+        } finally {
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔄 Refresh';
+            }
+        }
+    }
+    
+    // Cek autentikasi
+    onAuthStateChanged(auth, async (user) => {
+        console.log('Auth state changed:', user ? 'Logged in' : 'Logged out');
+        
+        if (!user) {
+            // Tidak login, redirect ke login
+            console.log('No user, redirecting to login...');
+            window.location.href = '/index.html';
+            return;
+        }
+        
+        // Cek apakah user adalah dashboard user
+        const currentVoter = JSON.parse(localStorage.getItem('currentVoter'));
+        
+        if (!currentVoter || currentVoter.isDashboardUser !== true) {
+            console.log('Access denied: Not a dashboard user');
+            await handleLogout();
+            return;
+        }
+        
+        console.log('User authorized:', currentVoter.name);
+        
+        // Sembunyikan loading screen dan tampilkan dashboard
+        if (loadingScreen) loadingScreen.style.display = 'none';
+        if (dashboardContent) dashboardContent.style.display = 'block';
+        
+        // Setup event listeners
+        if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+        if (refreshBtn) refreshBtn.addEventListener('click', handleRefresh);
+        
+        // Load dashboard data
+        try {
+            const { loadDashboard } = await import('./js/dashboard-main.js');
+            await loadDashboard();
+            
+            // Auto refresh every 30 seconds
+            setInterval(async () => {
+                if (document.visibilityState === 'visible') {
+                    console.log('Auto-refreshing dashboard...');
+                    await loadDashboard();
+                }
+            }, 30000);
+            
+        } catch (error) {
+            console.error('Error loading dashboard module:', error);
+            const infoFooter = document.getElementById('infoFooter');
+            if (infoFooter) {
+                infoFooter.innerHTML = '❌ Gagal memuat dashboard. Periksa koneksi dan refresh halaman.';
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

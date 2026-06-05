@@ -1,16 +1,19 @@
 // /public/js/modules/voteHandler.js
-import { db } from '/js/config/firebase.js';
-import { doc, collection, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-import { showNotification, showLoading } from '/js/modules/utils.js';
+import { db } from '../config/firebase.js';
+import { 
+    doc, 
+    getDoc, 
+    updateDoc, 
+    increment 
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+import { showNotification, showLoading } from './utils.js';
 
 export async function submitVote(candidate, voterData, onSuccess) {
     console.log('Candidate:', candidate);
     console.log('VoterData:', voterData);
     
-    if (!candidate) {
-        showNotification('No candidate selected!', 'error');
-        return false;
-    }
+    // PERBAIKAN: Jika candidate adalah null (tidak setuju), pilih kotak kosong
+    const isVotingForEmptyBox = !candidate;
     
     if (!voterData) {
         showNotification('Silakan login kembali', 'error');
@@ -23,42 +26,92 @@ export async function submitVote(candidate, voterData, onSuccess) {
         return false;
     }
     
-    const confirmVote = confirm(`Anda yakin ingin memilih ${candidate.name}?`);
+    if (voterData.isDashboardUser === true) {
+        showNotification('Admin tidak dapat melakukan voting!', 'error');
+        return false;
+    }
+    
+    // Konfirmasi berdasarkan pilihan
+    let confirmMessage = '';
+    if (isVotingForEmptyBox) {
+        confirmMessage = 'Anda yakin memilih KOTAK KOSONG/TIDAK SETUJU dengan semua kandidat?';
+    } else {
+        confirmMessage = `Anda yakin ingin memilih ${candidate.name}?`;
+    }
+    
+    const confirmVote = confirm(confirmMessage);
     if (!confirmVote) return false;
     
     showLoading(true);
     
     try {
-        // 1. Simpan vote ke collection votes
-        const votesCollection = collection(db, 'votes');
-        const voteData = {
-            userName: voterData.name || voterData.username,
-            candidateId: String(candidate.id || candidate.candidateNumber),
-            candidateNumber: Number(candidate.candidateNumber),
-            candidateName: candidate.name,
-            votedAt: new Date().toISOString(),
-            voterEmail: voterData.email || '',
-            voterUid: voterData.uid || ''
-        };
+        let candidateDocId = '';
+        let candidateName = '';
         
-        console.log('Vote data to save:', voteData);
+        if (isVotingForEmptyBox) {
+            // Pilih kotak kosong
+            candidateDocId = 'kotakKosong';
+            candidateName = 'Kotak Kosong';
+        } else {
+            // Pilih kandidat yang ditampilkan
+            candidateName = candidate.name;
+            if (candidate.name === 'Vincentius Alvin Rumantir' || candidate.name.includes('Vincentius')) {
+                candidateDocId = 'VincentiusAlvinRumantir';
+            } else if (candidate.name.toLowerCase().includes('kotak') || candidate.name.toLowerCase().includes('kosong')) {
+                candidateDocId = 'kotakKosong';
+            } else {
+                candidateDocId = candidate.name.replace(/\s/g, '');
+            }
+        }
         
-        const voteDoc = await addDoc(votesCollection, voteData);
-        console.log('Vote saved with ID:', voteDoc.id);
+        console.log('Voting for:', candidateName, 'Doc ID:', candidateDocId);
         
-        // 2. Update status voter
+        // 1. Increment vote untuk kandidat/kotak kosong yang dipilih
+        const candidateVoteRef = doc(db, 'votes', candidateDocId);
+        const candidateVoteDoc = await getDoc(candidateVoteRef);
+        
+        if (!candidateVoteDoc.exists()) {
+            await updateDoc(candidateVoteRef, { jumlahVote: increment(1) });
+        } else {
+            await updateDoc(candidateVoteRef, {
+                jumlahVote: increment(1)
+            });
+        }
+        
+        console.log(`Vote added to ${candidateDocId}`);
+        
+        // 2. Decrement notVoting (karena voter sudah memilih)
+        const notVotingRef = doc(db, 'votes', 'notVoting');
+        const notVotingDoc = await getDoc(notVotingRef);
+        
+        if (notVotingDoc.exists()) {
+            const currentNotVoting = notVotingDoc.data().jumlahVote || 0;
+            if (currentNotVoting > 0) {
+                await updateDoc(notVotingRef, {
+                    jumlahVote: increment(-1)
+                });
+                console.log('Decremented notVoting');
+            }
+        } else {
+            await updateDoc(notVotingRef, { jumlahVote: 3 });
+        }
+        
+        // 3. Update status voter
         const voterId = voterData.voterId || voterData.username;
         const voterRef = doc(db, 'voters', voterId);
         
         await updateDoc(voterRef, { 
             hasVoted: true, 
             votedAt: new Date().toISOString(),
-            votedFor: candidate.name
+            votedFor: candidateName
         });
         
         console.log('Voter updated successfully');
         
-        showNotification(`Terima kasih telah memilih ${candidate.name}!`, 'success');
+        let successMessage = isVotingForEmptyBox 
+            ? 'Terima kasih telah memberikan suara (Kotak Kosong/Tidak Setuju)!'
+            : `Terima kasih telah memilih ${candidateName}!`;
+        showNotification(successMessage, 'success');
         
         if (onSuccess) onSuccess();
         return true;
