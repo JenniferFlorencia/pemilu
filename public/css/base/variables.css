@@ -1,0 +1,28 @@
+/* CSS Variables */
+:root {
+    /* Colors */
+    --primary-color: #6f4d46;
+    --secondary-color: #985842;
+    --accent-color: #d9af96;
+    --background-light: #f5f2e7;
+    --text-dark: #6f4d46;
+    --text-light: #87655c;
+    
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}

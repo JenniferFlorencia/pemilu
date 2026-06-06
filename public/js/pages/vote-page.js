@@ -1,9 +1,9 @@
-// /public/js/vote.js
-import { db, auth } from './config/firebase.js';
+// /public/js/pages/vote-page.js
+import { db, auth } from '../config/firebase.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-import { loadCandidates, displayCandidate } from './modules/candidates.js';
-import { submitVote } from './modules/voteHandler.js';
-import { showNotification } from './modules/utils.js';
+import { loadCandidates, displayCandidate } from '../modules/voting/candidate-service.js';
+import { submitVote } from '../modules/voting/vote-handler.js';
+import { showNotification } from '../modules/utils/helpers.js';
 
 let currentCandidate = null;
 let candidatesList = [];

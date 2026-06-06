@@ -1,5 +1,5 @@
 // /public/js/modules/candidates.js
-import { db } from '../config/firebase.js';
+import { db } from '../../config/firebase.js';
 import {
     collection,
     getDocs

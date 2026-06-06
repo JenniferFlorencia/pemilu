@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="./css/pages/page-index.css">
     <title>Nanjing 2026 - Login</title>
 </head>
 
@@ -49,16 +48,16 @@
     <div id="loadingMessage" class="loading-message" style="display: none;">Loading...</div>
     <div id="notification" class="notification" style="display: none;"></div>
 
-    <script src="./js/config/env.js"></script>
-    <script type="module" src="./js/login.js"></script>
-    
+    <script src="/js/config/env.js"></script>
+    <script type="module" src="./js/pages/login-page.js"></script>
+
     <!-- Preload script untuk vote assets -->
     <script type="module">
         import { preloadVoteAssets } from './js/preload.js';
-        
+
         // Jalankan preloading saat halaman index dimuat
         preloadVoteAssets();
-        
+
         // Optional: Expose ke window untuk debugging
         window.preloadVoteAssets = preloadVoteAssets;
     </script>

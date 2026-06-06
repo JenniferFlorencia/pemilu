@@ -1,5 +1,6 @@
 // /public/js/modules/auth.js
-import { db, auth } from '../config/firebase.js';
+import { db, auth } from '../../config/firebase.js';
+import { showNotification, showLoading } from '../utils/helpers.js';
 import { 
     collection, 
     query, 
@@ -13,7 +14,6 @@ import {
 import { 
     signInWithEmailAndPassword 
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-import { showNotification, showLoading } from './utils.js';
 
 // Domain untuk email internal
 const EMAIL_DOMAIN = '@pemilu2026.internal';

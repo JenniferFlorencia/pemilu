@@ -2,20 +2,19 @@
 
 // Daftar asset yang perlu di-preload
 const ASSETS_TO_PRELOAD = [
-    // CSS Files
-    '/css/main.css',
-    '/css/vote.css',
+    // CSS Files - UPDATE PATH INI
+    '/css/pages/page-vote.css',
     
     // JS Modules (yang dibutuhkan vote.html)
     '/js/config/env.js',
     '/js/config/firebase.js',
-    '/js/modules/candidates.js',
-    '/js/modules/voteHandler.js',
-    '/js/modules/utils.js',
+    '/js/modules/voting/candidate-service.js',
+    '/js/modules/voting/vote-handler.js',
+    '/js/modules/utils/helpers.js',
     
     // Images
-    '/assets/images/anko_sideview.png',
-    '/assets/images/anko_index_wallpaper.png'
+    '/assets/images/backgrounds/anko_sideview.png',
+    '/assets/images/backgrounds/anko_index_wallpaper.png'
 ];
 
 // Cache untuk menyimpan status loading
@@ -121,7 +120,7 @@ function isUserLoggedIn() {
 /**
  * Navigate ke vote.html dengan preloading
  */
-export async function navigateToVoteWithPreload() {
+async function navigateToVoteWithPreload() {
     if (isRedirecting) return;
     isRedirecting = true;
     
@@ -221,10 +220,10 @@ export function resetPreloadState() {
     preloadCache.clear();
 }
 
-// Export all functions at the end (optional, already exported above)
-export { 
-    preloadVoteAssets, 
-    navigateToVoteWithPreload, 
-    preloadCandidateData, 
-    resetPreloadState 
-};
+// HAPUS BAGIAN INI - JANGAN ADA EXPORT DUPLIKAT DI BAWAH!
+// export { 
+//     preloadVoteAssets, 
+//     navigateToVoteWithPreload, 
+//     preloadCandidateData, 
+//     resetPreloadState 
+// };

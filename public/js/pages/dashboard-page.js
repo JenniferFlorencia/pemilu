@@ -1,9 +1,9 @@
-// /public/js/dashboard-main.js
-import { getDashboardStats, getCandidateDetails, getVotesPerCandidate } from './modules/dashboardData.js';
+// /public/js/pages/dashboard-page.js
+import { getDashboardStats, getCandidateDetails, getVotesPerCandidate } from '../modules/dashboard/dashboard-service.js';
 
 let voteChart = null;
 let refreshInterval = null;
-let isLoading = false; // Tambahan: flag untuk mencegah multiple load bersamaan
+let isLoading = false;
 
 // EXPORT fungsi loadDashboard agar bisa dipanggil dari HTML
 export async function loadDashboard() {
@@ -160,13 +160,13 @@ export async function loadDashboard() {
                     const percentage = stats.totalVoters > 0 ? ((voteCount / stats.totalVoters) * 100).toFixed(2) : 0;
                     
                     // Handle photo URL - PERBAIKAN: path yang benar
-                    let photoUrl = candidate.photoURL || './assets/images/default-avatar.png';
+                    let photoUrl = candidate.photoURL || './assets/images/backgrounds/default-avatar.png';
                     if (photoUrl && !photoUrl.startsWith('http') && !photoUrl.startsWith('./') && !photoUrl.startsWith('/')) {
-                        photoUrl = './assets/images/' + photoUrl;
+                        photoUrl = './assets/images/backgrounds/' + photoUrl;
                     }
                     // Jika photoUrl kosong atau null
                     if (!photoUrl) {
-                        photoUrl = './assets/images/default-avatar.png';
+                        photoUrl = './assets/images/backgrounds/default-avatar.png';
                     }
                     
                     resultSection.innerHTML += `
@@ -174,7 +174,7 @@ export async function loadDashboard() {
                             <h2>KANDIDAT ${candidate.candidateNumber}</h2>
                             <img src="${photoUrl}" 
                                  alt="${escapeHtml(candidate.name)}"
-                                 onerror="this.src='./assets/images/default-avatar.png'">
+                                 onerror="this.src='./assets/images/backgrounds/default-avatar.png'">
                             <h3>${escapeHtml(candidate.name)}</h3>
                             <div class="vote-count">
                                 <h1>${voteCount.toLocaleString('id-ID')}</h1>

@@ -1,5 +1,5 @@
 // /public/js/modules/dashboardData.js
-import { db, auth } from '../config/firebase.js';
+import { db, auth } from '../../config/firebase.js';
 import { 
     collection, 
     getDocs, 

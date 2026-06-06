@@ -1,0 +1,164 @@
+/* Mobile responsive styles (max-width: 768px) */
+@media screen and (max-width: 768px) {
+    html, body {
+        overflow-x: hidden;
+    }
+    
+    body {
+        padding: 12px;
+    }
+    
+    .candidate {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .candidate_img {
+        order: 1;
+        position: relative !important;
+        left: 40%;
+        transform: translateX(-50%) !important;
+        width: 80%;
+        max-width: 350px;
+        margin: 20px auto 0 auto !important;
+        display: block !important;
+        z-index: 10 !important;
+        opacity: 1 !important;
+    }
+    
+    .white-space {
+        order: 2;
+        width: 100%;
+        min-height: auto;
+        clip-path: none;
+        padding-bottom: 30px;
+        position: relative;
+        z-index: 20;
+        margin-top: -20px;
+    }
+    
+    .right_panel {
+        order: 3;
+        position: relative;
+        top: 0;
+        width: 100%;
+        height: auto;
+        clip-path: none;
+        padding-bottom: 30px;
+        z-index: 1;
+        margin-top: -10px;
+    }
+    
+    .candidate-text {
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .main-title {
+        font-size: 42px;
+        line-height: 1;
+    }
+    
+    .sub-title {
+        width: 100%;
+        font-size: 11px;
+    }
+    
+    .about_text {
+        max-width: 100%;
+        font-size: 13px;
+        margin: auto;
+    }
+    
+    .navbar {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .tag {
+        width: 100%;
+        font-size: 11px;
+    }
+    
+    .stats_card {
+        margin-top: 20px;
+        padding: 20px;
+    }
+    
+    .stats_content {
+        padding-left: 0;
+        width: 100%;
+    }
+    
+    .bottom_actions {
+        margin-left: 0%;
+        display: flex;
+        align-items: center;
+        margin-top: 40px;
+        justify-content: space-evenly;
+    }
+    
+    .pill_btn_agree,
+    .pill_btn_notagree {
+        width: 40%;
+        justify-content: space-between;
+    }
+    
+    #notification {
+        width: 90%;
+        right: 5%;
+        top: 15px;
+        font-size: 11px;
+    }
+    
+    /* Dashboard responsive */
+    .header-cards {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .info-card {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .result-section {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .vote-count h1 {
+        font-size: 2rem;
+    }
+    
+    .candidate-card img {
+        width: 110px;
+        height: 110px;
+    }
+    
+    .chart-section {
+        padding: 20px;
+    }
+    
+    .summary-box {
+        max-height: 350px;
+    }
+    
+    .button-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .btn {
+        flex: 1;
+        text-align: center;
+    }
+}

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pemilu - Live Results</title>
-    <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/pages/page-dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Dashboard Pemilu - Live Results</title>
 </head>
 <body>
 
@@ -21,7 +21,6 @@
         <header class="dashboard-header">
             <div>
                 <h1>DASHBOARD PEMILU - <span>HASIL SEMENTARA</span></h1>
-                <p><span class="live-indicator"></span> Data diperbarui: <span id="lastUpdate">-</span> WIB</p>
             </div>
             <div class="header-cards">
                 <div class="info-card">
@@ -61,10 +60,6 @@
         <section class="result-section" id="resultSection">
             <p style="text-align: center; color: #999;">Memuat data kandidat...</p>
         </section>
-
-        <div class="info-footer">
-            <div id="infoFooter">Memuat data...</div>
-        </div>
     </div>
 </div>
 
@@ -101,7 +96,7 @@
         }
         
         try {
-            const { loadDashboard } = await import('./js/dashboard-main.js');
+            const { loadDashboard } = await import('./js/pages/dashboard-page.js');
             await loadDashboard();
         } catch (error) {
             console.error('Refresh error:', error);
@@ -149,17 +144,9 @@
         
         // Load dashboard data
         try {
-            const { loadDashboard } = await import('./js/dashboard-main.js');
+            const { loadDashboard, startAutoRefresh } = await import('./js/pages/dashboard-page.js');
             await loadDashboard();
-            
-            // Auto refresh every 30 seconds
-            setInterval(async () => {
-                if (document.visibilityState === 'visible') {
-                    console.log('Auto-refreshing dashboard...');
-                    await loadDashboard();
-                }
-            }, 30000);
-            
+            startAutoRefresh();
         } catch (error) {
             console.error('Error loading dashboard module:', error);
             const infoFooter = document.getElementById('infoFooter');

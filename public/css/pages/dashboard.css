@@ -37,6 +37,7 @@ body {
 .dashboard-header p {
     margin-top: 10px;
     color: #666;
+    background: purple;
     font-size: 0.9rem;
 }
 

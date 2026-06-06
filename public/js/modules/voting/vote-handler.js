@@ -1,12 +1,12 @@
-// /public/js/modules/voteHandler.js
-import { db } from '../config/firebase.js';
+// /public/js/modules/voting/vote-handler.js
+import { db } from '../../config/firebase.js';
 import { 
     doc, 
     getDoc, 
     updateDoc, 
     increment 
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-import { showNotification, showLoading } from './utils.js';
+import { showNotification, showLoading } from '../utils/helpers.js';
 
 export async function submitVote(candidate, voterData, onSuccess) {
     console.log('Candidate:', candidate);

@@ -1,0 +1,12 @@
+/* Desktop responsive styles */
+@media screen and (min-width: 1200px) {
+    .bottom_actions {
+        width: 55% !important;
+    }
+}
+
+@media screen and (min-width: 1600px) {
+    .bottom_actions {
+        width: 50% !important;
+    }
+}

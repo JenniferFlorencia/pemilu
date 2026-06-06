@@ -1,6 +1,6 @@
-import { loginUser } from './modules/auth.js';
-import { validateInput, showNotification } from './modules/utils.js';
-
+// /public/js/pages/login-page.js
+import { loginUser } from '../modules/auth/auth-service.js';
+import { validateInput, showNotification } from '../modules/utils/helpers.js';
 const loginForm = document.getElementById('loginForm');
 
 loginForm.addEventListener('submit', async (e) => {
@@ -25,7 +25,7 @@ loginForm.addEventListener('submit', async (e) => {
     if (success) {
         try {
             // Dynamic import preload module
-            const { preloadVoteAssets, preloadCandidateData } = await import('./preload.js');
+            const { preloadVoteAssets, preloadCandidateData } = await import('../preload.js');
             preloadVoteAssets();
             preloadCandidateData(); // Optional: preload data kandidat
         } catch (err) {
