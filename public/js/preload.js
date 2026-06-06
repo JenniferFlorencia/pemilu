@@ -2,7 +2,7 @@
 
 // Daftar asset yang perlu di-preload
 const ASSETS_TO_PRELOAD = [
-    // CSS Files - UPDATE PATH INI
+    // CSS Files
     '/css/pages/page-vote.css',
     
     // JS Modules (yang dibutuhkan vote.html)
@@ -22,6 +22,20 @@ const preloadCache = new Map();
 let preloadStartTime = null;
 let preloadTimeout = null;
 let isRedirecting = false;
+let isPreloadActive = false;
+
+/**
+ * Stop preload and cleanup
+ */
+export function stopPreload() {
+    if (preloadTimeout) {
+        clearTimeout(preloadTimeout);
+        preloadTimeout = null;
+    }
+    isPreloadActive = false;
+    isRedirecting = true;
+    console.log('[Preload] Stopped due to redirect');
+}
 
 /**
  * Preload single asset
@@ -31,6 +45,12 @@ function preloadAsset(url) {
         // Cek cache
         if (preloadCache.has(url)) {
             resolve(preloadCache.get(url));
+            return;
+        }
+        
+        // Jika redirect sudah terjadi, hentikan preload
+        if (isRedirecting) {
+            reject(new Error('Redirect in progress'));
             return;
         }
         
@@ -97,7 +117,7 @@ async function preloadAllAssets() {
     const promises = ASSETS_TO_PRELOAD.map(url => 
         preloadAsset(url).catch(err => {
             console.warn(`[Preload] Warning: ${err.message}`);
-            return false; // Tidak gagalkan semua assets jika satu gagal
+            return false;
         })
     );
     
@@ -115,6 +135,14 @@ async function preloadAllAssets() {
 function isUserLoggedIn() {
     const currentVoter = localStorage.getItem('currentVoter');
     return currentVoter !== null;
+}
+
+/**
+ * Cek apakah user adalah dashboard user
+ */
+function isDashboardUser() {
+    const currentVoter = JSON.parse(localStorage.getItem('currentVoter') || '{}');
+    return currentVoter.isDashboardUser === true;
 }
 
 /**
@@ -140,26 +168,35 @@ async function navigateToVoteWithPreload() {
  * Main preload function - dipanggil dari index.html
  */
 export async function preloadVoteAssets() {
-    // Hanya jalankan preload jika user sudah login
+    // Hanya jalankan preload jika user sudah login DAN bukan dashboard user
     if (!isUserLoggedIn()) {
         console.log('[Preload] User not logged in, skipping preload');
         return;
     }
     
+    // PERBAIKAN: Jangan preload untuk dashboard user
+    if (isDashboardUser()) {
+        console.log('[Preload] Dashboard user detected, skipping preload');
+        return;
+    }
+    
     // Cegah multiple calls
-    if (preloadStartTime !== null) {
+    if (isPreloadActive) {
         console.log('[Preload] Already running, skipping...');
         return;
     }
     
+    isPreloadActive = true;
     preloadStartTime = Date.now();
     console.log('[Preload] Starting vote assets preload at', new Date(preloadStartTime).toLocaleTimeString());
     
-    // Set timeout 5 detik
+    // Set timeout 3 detik (lebih pendek)
     preloadTimeout = setTimeout(() => {
-        console.log('[Preload] Timeout reached (5 seconds), redirecting immediately...');
-        navigateToVoteWithPreload();
-    }, 5000);
+        console.log('[Preload] Timeout reached (3 seconds), redirecting immediately...');
+        if (isUserLoggedIn() && !isDashboardUser()) {
+            navigateToVoteWithPreload();
+        }
+    }, 3000);
     
     try {
         // Preload all assets
@@ -168,42 +205,18 @@ export async function preloadVoteAssets() {
         const elapsed = Date.now() - preloadStartTime;
         console.log(`[Preload] All assets loaded in ${elapsed}ms`);
         
-        // Jika masih dalam batas waktu dan user masih login, redirect
-        if (isUserLoggedIn() && !isRedirecting) {
+        // Jika masih dalam batas waktu dan user masih login dan bukan dashboard user
+        if (isUserLoggedIn() && !isDashboardUser() && !isRedirecting) {
             navigateToVoteWithPreload();
         }
     } catch (error) {
         console.error('[Preload] Error during preload:', error);
         // Jika error dan masih dalam batas waktu, tetap redirect
-        if (isUserLoggedIn() && !isRedirecting) {
+        if (isUserLoggedIn() && !isDashboardUser() && !isRedirecting) {
             navigateToVoteWithPreload();
         }
-    }
-}
-
-/**
- * Optional: Preload specific candidate data from Firestore
- * (dapat dipanggil setelah login berhasil)
- */
-export async function preloadCandidateData() {
-    if (!isUserLoggedIn()) return;
-    
-    console.log('[Preload] Preloading candidate data...');
-    
-    try {
-        // Dynamically import Firebase modules
-        const { db } = await import('./config/firebase.js');
-        const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
-        
-        // Preload candidates data (tanpa blocking)
-        const candidatesRef = collection(db, 'candidates');
-        getDocs(candidatesRef).then(snapshot => {
-            console.log('[Preload] Candidate data preloaded:', snapshot.size, 'candidates');
-        }).catch(err => {
-            console.warn('[Preload] Failed to preload candidate data:', err);
-        });
-    } catch (error) {
-        console.warn('[Preload] Could not preload candidate data:', error);
+    } finally {
+        isPreloadActive = false;
     }
 }
 
@@ -217,13 +230,9 @@ export function resetPreloadState() {
     }
     preloadStartTime = null;
     isRedirecting = false;
+    isPreloadActive = false;
     preloadCache.clear();
 }
 
-// HAPUS BAGIAN INI - JANGAN ADA EXPORT DUPLIKAT DI BAWAH!
-// export { 
-//     preloadVoteAssets, 
-//     navigateToVoteWithPreload, 
-//     preloadCandidateData, 
-//     resetPreloadState 
-// };
+// Expose stopPreload ke window untuk dipanggil dari auth-service
+window.stopPreload = stopPreload;

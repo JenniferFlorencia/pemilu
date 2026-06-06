@@ -1,4 +1,4 @@
-// /public/js/modules/auth.js
+// /public/js/modules/auth/auth-service.js
 import { db, auth } from '../../config/firebase.js';
 import { showNotification, showLoading } from '../utils/helpers.js';
 import { 
@@ -12,7 +12,8 @@ import {
     updateDoc 
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 import { 
-    signInWithEmailAndPassword 
+    signInWithEmailAndPassword,
+    signOut
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
 // Domain untuk email internal
@@ -59,14 +60,22 @@ export async function loginUser(username, password) {
         
         showNotification(`Login berhasil! Selamat datang, ${voterData.name}`, 'success');
         
+        // PERBAIKAN: Redirect berdasarkan role dengan delay yang lebih pendek
+        // Hentikan preload yang mungkin sedang berjalan
+        if (window.stopPreload) {
+            window.stopPreload();
+        }
+        
         // Redirect berdasarkan role
         setTimeout(() => {
             if (isDashboardUser) {
+                console.log('Redirecting to dashboard...');
                 window.location.href = '/dashboard.html';
             } else {
+                console.log('Redirecting to vote page...');
                 window.location.href = '/vote.html';
             }
-        }, 1000);
+        }, 800); // Reduced delay from 1000ms to 800ms
         
         return true;
         
@@ -97,5 +106,17 @@ export async function loginUser(username, password) {
         
     } finally {
         showLoading(false);
+    }
+}
+
+// Fungsi logout yang reusable
+export async function logoutUser() {
+    try {
+        await signOut(auth);
+        localStorage.removeItem('currentVoter');
+        return true;
+    } catch (error) {
+        console.error('Logout error:', error);
+        return false;
     }
 }

@@ -51,16 +51,25 @@
     <script src="/js/config/env.js"></script>
     <script type="module" src="./js/pages/login-page.js"></script>
 
-    <!-- Preload script untuk vote assets -->
-    <script type="module">
-        import { preloadVoteAssets } from './js/preload.js';
+<script type="module">
+    import { preloadVoteAssets } from './js/preload.js';
 
-        // Jalankan preloading saat halaman index dimuat
-        preloadVoteAssets();
-
-        // Optional: Expose ke window untuk debugging
-        window.preloadVoteAssets = preloadVoteAssets;
-    </script>
+    // PERBAIKAN: Hanya jalankan preload jika user sudah login dan BUKAN dashboard user
+    const currentVoter = localStorage.getItem('currentVoter');
+    if (currentVoter) {
+        try {
+            const voter = JSON.parse(currentVoter);
+            // Jangan preload untuk dashboard user
+            if (!voter.isDashboardUser) {
+                preloadVoteAssets();
+            } else {
+                console.log('Dashboard user detected, skipping preload');
+            }
+        } catch (e) {
+            console.warn('Error parsing voter data:', e);
+        }
+    }
+</script>>
 </body>
 
 </html>

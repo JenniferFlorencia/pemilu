@@ -1,6 +1,7 @@
 // /public/js/pages/login-page.js
 import { loginUser } from '../modules/auth/auth-service.js';
-import { validateInput, showNotification } from '../modules/utils/helpers.js';
+import { showNotification } from '../modules/utils/helpers.js';
+
 const loginForm = document.getElementById('loginForm');
 
 loginForm.addEventListener('submit', async (e) => {
@@ -19,17 +20,28 @@ loginForm.addEventListener('submit', async (e) => {
         return;
     }
     
-    const success = await loginUser(username, password);
+    // Disable button while processing
+    const loginBtn = document.getElementById('loginBtn');
+    const originalText = loginBtn.textContent;
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Loading...';
     
-    // Jika login berhasil, mulai preload vote assets
-    if (success) {
-        try {
-            // Dynamic import preload module
-            const { preloadVoteAssets, preloadCandidateData } = await import('../preload.js');
-            preloadVoteAssets();
-            preloadCandidateData(); // Optional: preload data kandidat
-        } catch (err) {
-            console.warn('Preload module not available:', err);
+    try {
+        const success = await loginUser(username, password);
+        
+        // Jika login berhasil, fungsi loginUser sudah melakukan redirect
+        // Tidak perlu preload lagi karena redirect akan terjadi
+        if (success) {
+            // Small delay to show success message
+            setTimeout(() => {
+                // Redirect sudah ditangani di loginUser
+            }, 500);
         }
+    } catch (error) {
+        console.error('Login error:', error);
+        showNotification('Terjadi kesalahan saat login', 'error');
+    } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = originalText;
     }
 });

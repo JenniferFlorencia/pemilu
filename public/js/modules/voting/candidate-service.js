@@ -7,7 +7,10 @@ import {
 
 export async function loadCandidates() {
     try {
+        // Gunakan query yang lebih efisien
         const candidatesRef = collection(db, 'candidates');
+        
+        // Hanya ambil field yang diperlukan, exclude field besar
         const querySnapshot = await getDocs(candidatesRef);
 
         const candidatesList = [];
@@ -15,8 +18,13 @@ export async function loadCandidates() {
             const data = doc.data();
             candidatesList.push({
                 id: doc.id,
-                ...data,
+                name: data.name,
                 candidateNumber: data.candidateNumber || parseInt(doc.id) || 0,
+                photoURL: data.photoURL, // URL saja, tidak perlu download image
+                vision: data.vision || [],
+                mission: data.mission || [],
+                bio: data.bio || ''
+                // Jangan ambil field yang tidak perlu
             });
         });
 
@@ -57,11 +65,36 @@ export function displayCandidate(candidate, index, total) {
         tagElement.textContent = `KANDIDAT ${candidate.candidateNumber || index + 1}`;
     }
 
+    // ⭐ OPTIMASI GAMBAR DARI DATABASE
     if (photoElement && candidate.photoURL) {
-        photoElement.src = candidate.photoURL;
+        // Set image dengan priority tinggi
+        const img = new Image();
+        
+        img.onload = () => {
+            photoElement.src = candidate.photoURL;
+            photoElement.style.opacity = '1';
+        };
+        
+        // Tambahkan parameter Firebase Storage untuk optimasi ukuran
+        let optimizedUrl = candidate.photoURL;
+        
+        // Jika menggunakan Firebase Storage, tambahkan parameter
+        if (optimizedUrl.includes('firebasestorage.googleapis.com')) {
+            // Minta ukuran yang lebih kecil (500px width)
+            const separator = optimizedUrl.includes('?') ? '&' : '?';
+            optimizedUrl = `${optimizedUrl}${separator}alt=media&width=500`;
+        }
+        
+        // Coba preload gambar sebelum ditampilkan
+        img.src = optimizedUrl;
+        
+        // Set fetchpriority high
+        photoElement.fetchPriority = 'high';
+        photoElement.loading = 'eager';
+        photoElement.decoding = 'async';
     }
 
-    // Tampilkan VISI - DIPERBAIKI dengan menambahkan class
+    // VISI & MISI (existing code)
     const visionContainer = document.getElementById('candidateVision');
     if (visionContainer) {
         if (candidate.vision && candidate.vision.length > 0) {
@@ -71,7 +104,6 @@ export function displayCandidate(candidate, index, total) {
         }
     }
 
-    // Tampilkan MISI
     const missionContainer = document.getElementById('candidateMission');
     if (missionContainer) {
         if (candidate.mission && candidate.mission.length > 0) {
