@@ -135,6 +135,10 @@ playwright-report/
 # Kecuali file contoh konfigurasi publik
 !config/firebase.example.json
 !config/env.example.js
+cleanup-users.js
+import-users-rest.js
+import-users.js
+import-users-curl.sh
 
 # ================================
 # IDE / workspace (tambahan)

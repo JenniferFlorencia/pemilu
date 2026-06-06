@@ -8,6 +8,7 @@
     "start": "firebase serve",
     "deploy": "firebase deploy",
     "import-users": "node src/scripts/import-users.js",
+    "cleanup-users": "node src/scripts/cleanup-users.js",
     "backup": "node src/scripts/backup.js"
   },
   "dependencies": {
