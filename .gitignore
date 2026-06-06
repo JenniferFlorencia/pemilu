@@ -1,109 +1,148 @@
-# ============================================
-# DEPENDENCIES & BUILD
-# ============================================
+# ================================
+# Dependencies
+# ================================
 node_modules/
-**/node_modules/
-dist/
-build/
-*.bundle.js
-*.bundle.css
 
-# ============================================
-# ENVIRONMENT & CONFIGURATION FILES
-# ============================================
+# ================================
+# Environment variables (semua varian)
+# ================================
 .env
-.env.local
-.env.*.local
-.env.production.local
-.env.development.local
-.firebaserc
-.firebase/
-firebase-debug.log
-.firebase/hosting.*.cache
+.env.*
+!.env.example        # Izinkan file contoh jika ada
+!.env.sample         # Izinkan file contoh
 
-# ============================================
-# CREDENTIALS & KEYS (RAHASIA!)
-# ============================================
-serviceAccountKey.json
-*serviceAccount*.json
-*credentials*.json
-*.pem
-*.key
-*.p12
-*.json.enc
-
-# ============================================
-# BACKUP FILES & FOLDERS
-# ============================================
-backup_old_files/
-backups/
-*.backup.json
-*.backup.js
-storage.rules.backup*
-
-# ============================================
-# ADMIN & SERVER SCRIPTS (HANYA DI LOCAL)
-# ============================================
-# Admin scripts di root
-create-auth-users.js
-
-# All server scripts di src/scripts/
-src/scripts/*.cjs
-src/scripts/*.js
-src/scripts/*.template.*
-!src/scripts/*.template.cjs
-!src/scripts/*.template.js
-
-# ============================================
-# TEST FILES
-# ============================================
-tests/
-coverage/
-.nyc_output/
-*.test.js
-*.test.cjs
-load-test.js
-auth.test.js
-
-# ============================================
-# TEMPORARY USER DATA
-# ============================================
-.user-passwords.json
-user-passwords.txt
-imported-users.log
-*.pid
-*.seed
-*.pid.lock
-logs/
+# ================================
+# Logs
+# ================================
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+logs/
+*.pid
+*.seed
 
-# ============================================
-# OS GENERATED FILES
-# ============================================
-.DS_Store
-.DS_Store?.?
-Thumbs.db
-ehthumbs.db
-Icon?
+# ================================
+# Editor files (semua editor umum)
+# ================================
+.vscode/
+.idea/
 *.swp
 *.swo
 *~
+*.bak
+*.orig
+*.tmp
+.cache/
+.tern-port
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# ============================================
-# IDE & EDITOR FILES
-# ============================================
-.vscode/
-.idea/
+# ================================
+# OS files
+# ================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ================================
+# Firebase (kunci dan konfigurasi privat)
+# ================================
+config/serviceAccountKey.json
+**/serviceAccountKey.json       # aman di subfolder mana pun
+.firebase/
+firebase-debug.log
+.firebaserc                     # jika menyimpan token atau project ID sensitif
+.runtimeconfig.json
+**/.runtimeconfig.json
+**/firebase.json.secret         # konvensi pribadi
+
+# ================================
+# Build output
+# ================================
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# ================================
+# Backup files (umum)
+# ================================
+*.backup
+*.old
+*.orig
+backup_*/
+backup_old_files/
+*.bak.[0-9]*
+
+# ================================
+# Firebase Functions (jika ada)
+# ================================
+functions/node_modules/
+functions/.runtimeconfig.json
+functions/lib/
+functions/generated/
+
+# ================================
+# Testing & coverage
+# ================================
+coverage/
+.nyc_output/
+*.test.js.snap
+jest.config.js.local
+test-results/
+playwright-report/
+
+# ================================
+# Misc / temporary
+# ================================
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+*.log.[0-9]*
+*.pid
+*.seed
+*.pid.lock
 *.sublime-*
+
+# ================================
+# Sensitive file types (jika terlanjur ada)
+# ================================
+*.pem
+*.p12
+*.pfx
+*.key
+*.secret
+*.private
+*.credential
+*credentials.json
+*.secrets
+
+# ================================
+# File yang tidak boleh di-commit secara khusus
+# ================================
+# Kecuali file contoh konfigurasi publik
+!config/firebase.example.json
+!config/env.example.js
+
+# ================================
+# IDE / workspace (tambahan)
+# ================================
+*.code-workspace
+*.iml
 .project
 .classpath
 .settings/
-
-# ============================================
-# PACKAGE MANAGER LOCKS (Optional - uncomment if needed)
-# ============================================
-# package-lock.json
-# yarn.lock
+*.sublime-project
+*.sublime-workspace
