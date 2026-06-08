@@ -1,6 +1,6 @@
 /* Login page layout styles */
 body {
-    background: url("/assets/images/backgrounds/anko_index_wallpaper.png") no-repeat;
+    background: url("/assets/images/backgrounds/anko_index_wallpaper.webp") no-repeat;
     background-size: cover;
     background-position: center;
     display: flex;

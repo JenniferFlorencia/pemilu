@@ -5,9 +5,21 @@ let voteChart = null;
 let refreshInterval = null;
 let isLoading = false;
 
+// Fungsi untuk mengubah nama kandidat
+function formatCandidateName(originalName) {
+    if (!originalName) return originalName;
+    
+    if (originalName === 'Vincentius Alvin Rumantir' || originalName.includes('Vincentius')) {
+        return 'Setuju';
+    }
+    if (originalName === 'Kotak Kosong' || originalName.toLowerCase().includes('kotak')) {
+        return 'Tidak Setuju';
+    }
+    return originalName;
+}
+
 // EXPORT fungsi loadDashboard agar bisa dipanggil dari HTML
 export async function loadDashboard() {
-    // Cegah multiple loading bersamaan
     if (isLoading) {
         console.log('Dashboard already loading, skipping...');
         return;
@@ -18,12 +30,10 @@ export async function loadDashboard() {
     try {
         console.log('Loading dashboard...');
         
-        // Update timestamp
         const now = new Date();
         const lastUpdateEl = document.getElementById('lastUpdate');
         if (lastUpdateEl) lastUpdateEl.textContent = now.toLocaleTimeString('id-ID');
         
-        // Get stats
         const stats = await getDashboardStats();
         if (!stats || stats.error) {
             console.error('Failed to load stats:', stats?.error);
@@ -34,7 +44,6 @@ export async function loadDashboard() {
         
         console.log('Stats loaded:', stats);
         
-        // Update header cards
         const totalVotersEl = document.getElementById('totalVoters');
         const totalVotesCastEl = document.getElementById('totalVotesCast');
         
@@ -45,13 +54,37 @@ export async function loadDashboard() {
             totalVotesCastEl.innerHTML = `${stats.totalVotesCast.toLocaleString('id-ID')} <span id="votePercent">(${votePercentage}%)</span>`;
         }
         
-        // Prepare chart data
-        const chartLabels = [...Object.keys(stats.voteCounts), 'Belum Memilih'];
+        // Sort voteCounts berdasarkan nama asli untuk konsistensi
+        const sortedVoteEntries = Object.entries(stats.voteCounts)
+            .sort((a, b) => a[0].localeCompare(b[0]));
+        
+        // Definisikan warna
+        const getColorForName = (originalName, index) => {
+            const specificColors = {
+                'Vincentius Alvin Rumantir': '#2563eb',
+                'Kotak Kosong': '#10b981'
+            };
+            
+            if (specificColors[originalName]) return specificColors[originalName];
+            
+            const defaultColors = ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec489a', '#06b6d4', '#f97316', '#a855f7'];
+            return defaultColors[index % defaultColors.length];
+        };
+        
+        // Siapkan data chart dengan nama yang sudah diformat
+        const chartLabels = [
+            ...sortedVoteEntries.map(([originalName]) => formatCandidateName(originalName)), 
+            'Belum Memilih'
+        ];
         const chartData = [
-            ...Object.values(stats.voteCounts).map(v => parseFloat(((v.count / stats.totalVoters) * 100).toFixed(2))),
+            ...sortedVoteEntries.map(([, data]) => parseFloat(((data.count / stats.totalVoters) * 100).toFixed(2))),
             parseFloat(stats.notVotedPercentage)
         ];
-        const chartColors = ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec489a', '#06b6d4', '#f97316', '#a855f7'];
+        
+        const chartColors = [
+            ...sortedVoteEntries.map(([originalName], idx) => getColorForName(originalName, idx)),
+            '#ef4444'
+        ];
         
         // Update or create chart
         const ctx = document.getElementById('voteChart');
@@ -59,6 +92,7 @@ export async function loadDashboard() {
             if (voteChart) {
                 voteChart.data.datasets[0].data = chartData;
                 voteChart.data.labels = chartLabels;
+                voteChart.data.datasets[0].backgroundColor = chartColors;
                 voteChart.update();
             } else {
                 voteChart = new Chart(ctx, {
@@ -67,7 +101,7 @@ export async function loadDashboard() {
                         labels: chartLabels,
                         datasets: [{
                             data: chartData,
-                            backgroundColor: chartColors.slice(0, chartLabels.length),
+                            backgroundColor: chartColors,
                             borderWidth: 2,
                             borderColor: '#fff'
                         }]
@@ -99,36 +133,34 @@ export async function loadDashboard() {
             }
         }
         
-        // Update summary items
+        // Update summary items dengan nama yang sudah diformat
         const summaryContainer = document.getElementById('summaryItems');
         if (summaryContainer) {
             summaryContainer.innerHTML = '';
             
-            if (Object.keys(stats.voteCounts).length === 0) {
+            if (sortedVoteEntries.length === 0) {
                 summaryContainer.innerHTML = '<p style="text-align: center; color: #999;">Belum ada suara masuk</p>';
             } else {
-                let colorIndex = 0;
-                for (const [name, voteData] of Object.entries(stats.voteCounts)) {
-                    const percentage = stats.percentages[name];
-                    const color = chartColors[colorIndex % chartColors.length];
+                sortedVoteEntries.forEach(([originalName, voteData], idx) => {
+                    const displayName = formatCandidateName(originalName);
+                    const percentage = stats.percentages[originalName];
+                    const color = chartColors[idx];
                     
                     summaryContainer.innerHTML += `
                         <div class="summary-item">
                             <div class="left">
                                 <span class="dot" style="background-color: ${color}"></span>
                                 <div>
-                                    <h4>${escapeHtml(name)}</h4>
+                                    <h4>${escapeHtml(displayName)}</h4>
                                     <small>${voteData.count.toLocaleString('id-ID')} suara</small>
                                 </div>
                             </div>
                             <h3 style="color: ${color}">${percentage}%</h3>
                         </div>
                     `;
-                    colorIndex++;
-                }
+                });
             }
             
-            // Add "Belum Memilih" to summary
             summaryContainer.innerHTML += `
                 <div class="summary-item">
                     <div class="left">
@@ -143,7 +175,7 @@ export async function loadDashboard() {
             `;
         }
         
-        // Update candidate cards
+        // Update candidate cards dengan nama yang sudah diformat
         const candidates = await getCandidateDetails();
         const votesPerCandidate = await getVotesPerCandidate();
         const resultSection = document.getElementById('resultSection');
@@ -159,23 +191,24 @@ export async function loadDashboard() {
                                      votesPerCandidate.get(String(candidate.candidateNumber)) || 0;
                     const percentage = stats.totalVoters > 0 ? ((voteCount / stats.totalVoters) * 100).toFixed(2) : 0;
                     
-                    // Handle photo URL - PERBAIKAN: path yang benar
+                    // Format display name
+                    let displayName = formatCandidateName(candidate.name);
+                    
                     let photoUrl = candidate.photoURL || './assets/images/backgrounds/default-avatar.png';
                     if (photoUrl && !photoUrl.startsWith('http') && !photoUrl.startsWith('./') && !photoUrl.startsWith('/')) {
                         photoUrl = './assets/images/backgrounds/' + photoUrl;
                     }
-                    // Jika photoUrl kosong atau null
                     if (!photoUrl) {
                         photoUrl = './assets/images/backgrounds/default-avatar.png';
                     }
                     
                     resultSection.innerHTML += `
                         <div class="candidate-card">
-                            <h2>KANDIDAT ${candidate.candidateNumber}</h2>
+                            <h2>${displayName === 'Setuju' ? 'SETUJU' : (displayName === 'Tidak Setuju' ? 'TIDAK SETUJU' : `KANDIDAT ${candidate.candidateNumber}`)}</h2>
                             <img src="${photoUrl}" 
-                                 alt="${escapeHtml(candidate.name)}"
+                                 alt="${escapeHtml(displayName)}"
                                  onerror="this.src='./assets/images/backgrounds/default-avatar.png'">
-                            <h3>${escapeHtml(candidate.name)}</h3>
+                            <h3>${escapeHtml(displayName)}</h3>
                             <div class="vote-count">
                                 <h1>${voteCount.toLocaleString('id-ID')}</h1>
                                 <p>suara (${percentage}%)</p>
@@ -186,7 +219,6 @@ export async function loadDashboard() {
             }
         }
         
-        // Update footer info
         const infoFooter = document.getElementById('infoFooter');
         if (infoFooter) {
             const tpsEstimate = Math.ceil(stats.totalVoters / 200);
@@ -218,15 +250,12 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Auto-refresh every 30 seconds
 export function startAutoRefresh() {
     if (refreshInterval) {
         clearInterval(refreshInterval);
         refreshInterval = null;
     }
-    // Mulai interval baru
     refreshInterval = setInterval(() => {
-        // Hanya refresh jika halaman visible (menghemat resource)
         if (document.visibilityState === 'visible') {
             loadDashboard();
         }
@@ -242,7 +271,6 @@ export function stopAutoRefresh() {
     }
 }
 
-// Manual refresh function dengan feedback
 export async function manualRefresh() {
     const refreshBtn = document.getElementById('refreshBtn');
     if (refreshBtn) {
@@ -252,7 +280,6 @@ export async function manualRefresh() {
         
         try {
             await loadDashboard();
-            // Reset interval setelah manual refresh
             stopAutoRefresh();
             startAutoRefresh();
         } finally {
@@ -264,11 +291,9 @@ export async function manualRefresh() {
     }
 }
 
-// Refresh button handler - PERBAIKAN: tunggu DOM siap
 function initRefreshButton() {
     const refreshBtn = document.getElementById('refreshBtn');
     if (refreshBtn) {
-        // Hapus event listener lama jika ada (untuk mencegah duplicate)
         const newRefreshBtn = refreshBtn.cloneNode(true);
         refreshBtn.parentNode.replaceChild(newRefreshBtn, refreshBtn);
         
@@ -279,41 +304,27 @@ function initRefreshButton() {
     }
 }
 
-// Initialize dashboard - PERBAIKAN: load selesai baru start auto-refresh
 async function initDashboard() {
     console.log('Initializing dashboard...');
-    
-    // Setup refresh button
     initRefreshButton();
-    
-    // Load data pertama kali
     await loadDashboard();
-    
-    // Setelah load selesai, mulai auto-refresh
     startAutoRefresh();
 }
 
-// Event listener dengan pengecekan DOM ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDashboard);
 } else {
-    // DOM sudah siap, langsung inisialisasi
     initDashboard();
 }
 
-// Cleanup interval on page unload
 window.addEventListener('beforeunload', () => {
     stopAutoRefresh();
 });
 
-// Optional: Hentikan auto-refresh saat halaman tidak visible (hemat resource)
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
-        // Halaman tidak terlihat, refresh tetap berjalan tapi tidak akan mengeksekusi
-        // karena sudah ada pengecekan di interval
         console.log('Page hidden, auto-refresh paused');
     } else {
-        // Halaman kembali terlihat, refresh sekali untuk update
         console.log('Page visible, refreshing data...');
         loadDashboard();
     }

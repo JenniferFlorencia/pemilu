@@ -398,6 +398,54 @@ MAIN SECTION (TOMBOL CTA)
     box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
 }
 
+/* Tambahkan style untuk tombol LOGOUT */
+.pill_btn_logout {
+    width: 60%;
+    text-align: center;
+    padding: 12px 18px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: white;
+    background: linear-gradient(90deg, #6f4d46, #985842);
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(111, 77, 70, 0.4);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    margin: 0 auto;
+}
+
+.pill_btn_logout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+    border-radius: 30px;
+}
+
+.pill_btn_logout:hover::before {
+    width: 100%;
+}
+
+.pill_btn_logout:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+/*================
+AKHIR MAIN SECTION
+================*/
+
 /* NOTIFICATION */
 @keyframes slideIn {
     from {

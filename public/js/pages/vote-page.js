@@ -1,6 +1,7 @@
 // /public/js/pages/vote-page.js
 import { db, auth } from '../config/firebase.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 import { loadCandidates, displayCandidate } from '../modules/voting/candidate-service.js';
 import { submitVote } from '../modules/voting/vote-handler.js';
 import { showNotification } from '../modules/utils/helpers.js';
@@ -9,13 +10,12 @@ let currentCandidate = null;
 let candidatesList = [];
 let currentIndex = 0;
 
-// ========== PRELOAD DATA KANDIDAT (TAMBAHKAN DI SINI) ==========
+// ========== PRELOAD DATA KANDIDAT ==========
 let candidatesCache = null;
 let preloadStarted = false;
 
 /**
  * Preload data kandidat dari cache atau Firestore
- * Ini akan jalan lebih awal sebelum DOM ready
  */
 async function preloadCandidatesData() {
     if (preloadStarted) return;
@@ -23,11 +23,9 @@ async function preloadCandidatesData() {
     
     console.log('[Preload] Starting candidates data preload...');
     
-    // Cek cache di localStorage
     const cached = localStorage.getItem('candidatesCache');
     const cacheTime = localStorage.getItem('candidatesCacheTime');
     
-    // Cache berlaku 1 jam (3600000 ms)
     if (cached && cacheTime && (Date.now() - parseInt(cacheTime) < 3600000)) {
         try {
             candidatesCache = JSON.parse(cached);
@@ -38,7 +36,6 @@ async function preloadCandidatesData() {
         }
     }
     
-    // Jika tidak ada cache, preload dari Firestore
     try {
         console.log('[Preload] Fetching fresh candidates data...');
         candidatesCache = await loadCandidates();
@@ -50,8 +47,7 @@ async function preloadCandidatesData() {
     }
 }
 
-// ⚡ JALANKAN PRELOAD SEGERA (tanpa menunggu apapun)
-// Ini akan jalan IMMEDIATELY saat file ini di-load
+// Jalankan preload
 preloadCandidatesData();
 
 // ========== PROTEKSI DASHBOARD USER ==========
@@ -70,7 +66,68 @@ const checkDashboardUser = () => {
 if (checkDashboardUser()) {
     throw new Error('Unauthorized: Dashboard user cannot access voting page');
 }
-// ============================================
+
+// ========== FUNGSI LOGOUT ==========
+async function handleLogout() {
+    const confirmed = confirm('Apakah Anda yakin ingin keluar?');
+    if (!confirmed) return;
+    
+    try {
+        await signOut(auth);
+        localStorage.removeItem('currentVoter');
+        localStorage.removeItem('candidatesCache');
+        localStorage.removeItem('candidatesCacheTime');
+        showNotification('Anda telah logout', 'success');
+        setTimeout(() => {
+            window.location.href = '/index.html';
+        }, 500);
+    } catch (error) {
+        console.error('Logout error:', error);
+        showNotification('Gagal logout: ' + error.message, 'error');
+    }
+}
+
+// ========== FUNGSI UNTUK MENGGANTI TOMBOL VOTE DENGAN LOGOUT ==========
+function replaceButtonsWithLogout() {
+    const bottomActions = document.querySelector('.bottom_actions');
+    if (!bottomActions) return;
+    
+    // Sembunyikan tombol vote
+    const agreeBtn = document.getElementById('agreeBtn');
+    const disagreeBtn = document.getElementById('disagreeBtn');
+    
+    if (agreeBtn) agreeBtn.style.display = 'none';
+    if (disagreeBtn) disagreeBtn.style.display = 'none';
+    
+    // Cek apakah tombol logout sudah ada
+    let logoutBtn = document.getElementById('logoutBtn');
+    if (!logoutBtn) {
+        // Buat tombol logout baru dengan style yang sama
+        logoutBtn = document.createElement('div');
+        logoutBtn.id = 'logoutBtn';
+        logoutBtn.className = 'pill_btn_logout pill_btn';
+        logoutBtn.textContent = 'LOGOUT';
+        
+        // Tambahkan event listener
+        logoutBtn.addEventListener('click', handleLogout);
+        
+        // Tambahkan ke container
+        bottomActions.appendChild(logoutBtn);
+    } else {
+        logoutBtn.style.display = 'block';
+    }
+}
+
+// ========== FUNGSI UNTUK MENGEMBALIKAN TOMBOL VOTE (jika diperlukan) ==========
+function restoreVoteButtons() {
+    const agreeBtn = document.getElementById('agreeBtn');
+    const disagreeBtn = document.getElementById('disagreeBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    if (agreeBtn) agreeBtn.style.display = 'block';
+    if (disagreeBtn) disagreeBtn.style.display = 'block';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+}
 
 onAuthStateChanged(auth, (user) => {
     if (!user) {
@@ -84,14 +141,12 @@ async function init() {
     
     if (checkDashboardUser()) return;
     
-    // ⚡ GUNAKAN CACHE jika tersedia (LEBIH CEPAT)
     if (candidatesCache && candidatesCache.length > 0) {
         console.log('[Init] Using preloaded candidates from cache');
         candidatesList = candidatesCache;
     } else {
         console.log('[Init] No cache available, loading from Firestore...');
         candidatesList = await loadCandidates();
-        // Simpan ke cache setelah load
         if (candidatesList.length > 0) {
             candidatesCache = candidatesList;
             localStorage.setItem('candidatesCache', JSON.stringify(candidatesList));
@@ -121,19 +176,17 @@ async function init() {
             voterNameEl.innerHTML = `Welcome, ${currentVoter.name || currentVoter.username}<br>`;
         }
         
+        // Jika sudah vote, ganti tombol dengan logout
         if (currentVoter.hasVoted) {
             const voterStatusEl = document.getElementById('voterStatus');
-            if (voterStatusEl) voterStatusEl.textContent = 'You have already voted!';
+            if (voterStatusEl) voterStatusEl.textContent = 'Terima kasih telah memberikan suara!';
             
-            document.querySelectorAll('.pill_btn').forEach(btn => {
-                btn.style.pointerEvents = 'none';
-                btn.style.opacity = '0.5';
-            });
+            // Ganti tombol vote dengan tombol logout
+            replaceButtonsWithLogout();
         }
     }
 }
 
-// PERBAIKAN: Fungsi handleVote sekarang menerima parameter pilihan
 async function handleVote(choice) {
     const currentVoter = JSON.parse(localStorage.getItem('currentVoter'));
     
@@ -151,7 +204,6 @@ async function handleVote(choice) {
         return;
     }
     
-    // choice bisa 'agree' (setuju dengan currentCandidate) atau 'disagree' (kotak kosong)
     const selectedCandidate = choice === 'agree' ? currentCandidate : null;
     
     const success = await submitVote(selectedCandidate, currentVoter, () => {
@@ -159,12 +211,10 @@ async function handleVote(choice) {
         localStorage.setItem('currentVoter', JSON.stringify(currentVoter));
         
         const voterStatusEl = document.getElementById('voterStatus');
-        if (voterStatusEl) voterStatusEl.textContent = 'You have already voted!';
+        if (voterStatusEl) voterStatusEl.textContent = 'Terima kasih telah memberikan suara!';
         
-        document.querySelectorAll('.pill_btn').forEach(btn => {
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.5';
-        });
+        // Ganti tombol vote dengan tombol logout setelah vote berhasil
+        replaceButtonsWithLogout();
     });
 }
 
@@ -176,19 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const agreeBtn = document.getElementById('agreeBtn');
     const disagreeBtn = document.getElementById('disagreeBtn');
     
-    // PERBAIKAN: Kirim parameter yang berbeda untuk setiap tombol
     if (agreeBtn) agreeBtn.addEventListener('click', () => handleVote('agree'));
     if (disagreeBtn) disagreeBtn.addEventListener('click', () => handleVote('disagree'));
 });
 
 /**
  * Sync height antara white-space dan right panel
- * Dikurangi 50px untuk kompensasi top: -50px pada right panel
  */
 function syncWhiteSpaceWithRightPanel() {
-    // Desktop only
     if (window.innerWidth <= 768) {
-        // Reset styling di mobile
         const whiteSpace = document.querySelector('.white-space');
         if (whiteSpace) {
             whiteSpace.style.height = '';
@@ -200,34 +246,21 @@ function syncWhiteSpaceWithRightPanel() {
     const rightPanel = document.querySelector('.right_panel');
     const whiteSpace = document.querySelector('.white-space');
     
-    if (!rightPanel || !whiteSpace) {
-        console.warn('Elements not found');
-        return;
-    }
+    if (!rightPanel || !whiteSpace) return;
     
-    // Ambil height actual dari right panel
     const rightPanelHeight = rightPanel.offsetHeight;
     
     if (rightPanelHeight > 0) {
-        // Kurangi 50px untuk kompensasi top: -50px pada right panel
         const adjustedHeight = rightPanelHeight - 50;
-        
-        // Set white-space memiliki height yang sudah disesuaikan
         whiteSpace.style.height = `${adjustedHeight}px`;
         whiteSpace.style.minHeight = `${adjustedHeight}px`;
-        
-        // Debug info
         console.log(`✅ Synced: Right panel height = ${rightPanelHeight}px, Adjusted height = ${adjustedHeight}px`);
     } else {
-        console.warn('Right panel height is 0, retrying...');
-        // Retry setelah delay
         setTimeout(syncWhiteSpaceWithRightPanel, 100);
     }
 }
 
-// Inisialisasi dengan berbagai event
 function initHeightSync() {
-    // Tunggu DOM siap
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(syncWhiteSpaceWithRightPanel, 50);
@@ -236,17 +269,14 @@ function initHeightSync() {
         setTimeout(syncWhiteSpaceWithRightPanel, 50);
     }
     
-    // Tunggu semua gambar dan resource load
     window.addEventListener('load', syncWhiteSpaceWithRightPanel);
     
-    // Handle resize
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(syncWhiteSpaceWithRightPanel, 150);
     });
     
-    // Observer untuk perubahan konten di right panel
     const observer = new MutationObserver(() => {
         syncWhiteSpaceWithRightPanel();
     });
@@ -262,16 +292,4 @@ function initHeightSync() {
     }
 }
 
-// Jalankan
 initHeightSync();
-
-// Ekspos ke window untuk debugging
-// window.syncHeight = syncWhiteSpaceWithRightPanel;
-
-// ⚡ Ekspos fungsi untuk clear cache (opsional, untuk debugging)
-// window.clearCandidatesCache = () => {
-//     localStorage.removeItem('candidatesCache');
-//     localStorage.removeItem('candidatesCacheTime');
-//     candidatesCache = null;
-//     console.log('Cache cleared');
-// };
