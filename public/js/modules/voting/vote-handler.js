@@ -4,6 +4,7 @@ import {
     doc,
     getDoc,
     updateDoc,
+    setDoc,  // ← TAMBAHKAN INI
     increment
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 import { showNotification, showLoading } from '../utils/helpers.js';
@@ -66,35 +67,27 @@ export async function submitVote(candidate, voterData, onSuccess) {
 
         console.log('Voting for:', candidateName, 'Doc ID:', candidateDocId);
 
+        // ========== PERBAIKAN 1: Gunakan setDoc dengan merge ==========
         // 1. Increment vote untuk kandidat/kotak kosong yang dipilih
         const candidateVoteRef = doc(db, 'votes', candidateDocId);
-        const candidateVoteDoc = await getDoc(candidateVoteRef);
-
-        if (!candidateVoteDoc.exists()) {
-            await updateDoc(candidateVoteRef, { jumlahVote: increment(1) });
-        } else {
-            await updateDoc(candidateVoteRef, {
-                jumlahVote: increment(1)
-            });
-        }
+        
+        // setDoc dengan merge: true akan create jika belum ada, atau update jika sudah ada
+        await setDoc(candidateVoteRef, {
+            jumlahVote: increment(1)
+        }, { merge: true });
 
         console.log(`Vote added to ${candidateDocId}`);
 
+        // ========== PERBAIKAN 2: Handle notVoting dengan setDoc juga ==========
         // 2. Decrement notVoting (karena voter sudah memilih)
         const notVotingRef = doc(db, 'votes', 'notVoting');
-        const notVotingDoc = await getDoc(notVotingRef);
-
-        if (notVotingDoc.exists()) {
-            const currentNotVoting = notVotingDoc.data().jumlahVote || 0;
-            if (currentNotVoting > 0) {
-                await updateDoc(notVotingRef, {
-                    jumlahVote: increment(-1)
-                });
-                console.log('Decremented notVoting');
-            }
-        } else {
-            await updateDoc(notVotingRef, { jumlahVote: 3 });
-        }
+        
+        // Gunakan setDoc dengan merge: true untuk keamanan
+        await setDoc(notVotingRef, {
+            jumlahVote: increment(-1)
+        }, { merge: true });
+        
+        console.log('Updated notVoting counter');
 
         // 3. Update status voter
         const voterId = voterData.voterId || voterData.username;
